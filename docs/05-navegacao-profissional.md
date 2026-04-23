@@ -23,7 +23,7 @@ Onde a mágica acontece. O fluxo principal usa abas, mas cada aba pode ter sua p
 -   **Configurações:** Espaço para personalização contendo:
     -   Alteração de tema (Light/Dark) persistível.
     -   Perfil do usuário (Exibição de admin/user).
-    -   **Preferência de tratamento (Sr., Sra., Srta.).**
+    -   **Preferência de tratamento (Ex: Campo para selecionar Sr., Sra., Srta.).**
 
 ---
 
@@ -34,11 +34,12 @@ Dentro da aba de **Tarefas**, usamos uma pilha para permitir que o usuário nave
 -   `TaskForm`: Tela para criar ou editar uma tarefa.
 -   `TaskDetail`: Detalhes de uma tarefa específica.
 
-### Fluxos esperados:
--   `Home` -> `Tarefas` (mudar de aba)
--   `TaskList` -> `TaskForm` (ir para cadastro)
--   `TaskList` -> `TaskDetail` (ir para detalhes)
--   `TaskDetail` -> `TaskForm` (ir para edição)
+### 🧭 Navegações Esperadas:
+-   **Home para Tarefas:** Ir da tela inicial para a aba de listagem.
+-   **Lista para Cadastro:** Botão na lista que leva ao formulário vazio.
+-   **Lista para Detalhes:** Clicar em uma tarefa para ver seus detalhes.
+-   **Detalhes para Edição:** Botão no detalhe que leva ao formulário preenchido.
+-   **Botão Voltar:** Navegação natural da stack para retornar entre as telas.
 
 ---
 

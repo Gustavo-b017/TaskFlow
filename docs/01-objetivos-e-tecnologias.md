@@ -1,6 +1,15 @@
 # 🎯 Objetivos e Tecnologias
 
-O **TaskFlow** é um aplicativo de gerenciamento de tarefas pessoais. O objetivo é criar uma solução que permita ao usuário gerenciar seu dia a dia de forma eficiente e organizada.
+O **TaskFlow** é um aplicativo de gerenciamento de tarefas pessoais. Este é um projeto **Open Source** desenhado para ser uma fonte de referência e aprendizado para novos usuários que estão ingressando no ecossistema React Native.
+
+## ✨ Funcionalidades Iniciais
+
+- **Login simples:** Autenticação com perfis diferenciados.
+- **Lista de tarefas:** Visualização organizada com FlatList.
+- **Filtros:** Filtragem por status (pendente e concluída).
+- **Armazenamento local:** Persistência total com AsyncStorage.
+- **Tema:** Suporte a Dark e Light Mode.
+- **Consumo de API:** Busca de dados externos (frases e categorias).
 
 ## 🚀 O Que Você Vai Aprender?
 

@@ -24,15 +24,20 @@ O app consome uma API para buscar dados complementares. Conforme sugerido na pro
 
 ### O que o app deve demonstrar?
 -   **Fetch ou Axios:** Uso de uma biblioteca para fazer a chamada HTTP.
--   **Tratamento de Loading:** Mostrar um indicador enquanto os dados não chegam.
+-   **Tratamento de Loading:** Mostrar um indicador (`ActivityIndicator`) enquanto os dados não chegam.
 -   **Tratamento de Erro:** Exibir uma mensagem caso o servidor esteja fora do ar ou não haja internet.
--   **Atualização da Interface:** Refletir os dados da API na tela automaticamente.
+-   **Atualização da Interface:** Refletir os dados da API na tela automaticamente (ex: frase do dia mudando no useEffect).
 
 ---
 
-## 🛠️ Exemplo de Implementação
-
-Criamos o arquivo `services/api.ts` para centralizar as chamadas. Isso facilita a troca da URL da API ou da biblioteca de requisições no futuro, seguindo a arquitetura modular.
+## 🛠️ Regras de Negócio (Check-list Final)
+1. Título é obrigatório.
+2. Não permitir salvar campos vazios.
+3. Cada tarefa deve ter um ID único.
+4. Datas de criação/atualização devem ser geradas automaticamente.
+5. Edição deve preservar o ID original.
+6. Exclusão exige confirmação visual.
+7. Persistência local deve ser re-hidratada no boot do app.
 
 ---
 ## 🎉 Conclusão do Guia

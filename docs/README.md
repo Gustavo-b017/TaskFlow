@@ -49,6 +49,21 @@ Se você está usando este guia para sua avaliação, certifique-se de cumprir e
 ---
 *Data de Entrega Final: 29/04/2026*
 
+## 📽️ Requisitos para Entrega
+
+A entrega deve ser feita via Microsoft Teams e conter:
+1. **Código Completo:** Projeto funcional seguindo a arquitetura.
+2. **Vídeo Demonstrativo:** Entre 3 a 7 minutos mostrando Navegação, CRUD, Persistência e API.
+3. **Identificação:** Nome e RM dos integrantes (máximo 5 pessoas por grupo).
+
+## 📊 Critérios de Avaliação
+
+- **Funcionalidade (45%):** CRUD, navegação, AsyncStorage e API funcionando.
+- **Código (25%):** Limpo, modularizado e 100% tipado (sem `any`).
+- **UI (20%):** Interface consistente, layout limpo e feedbacks visuais.
+- **Apresentação (10%):** Qualidade e clareza do vídeo demonstrativo.
+
+---
 # 📚 Referências Oficiais
 
 Para aprofundar seus conhecimentos, consulte a documentação oficial das tecnologias utilizadas:

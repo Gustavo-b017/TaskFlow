@@ -32,9 +32,11 @@ Para exibir as tarefas, usamos o componente `FlatList`. Ele é mais eficiente qu
 ## ✨ Princípios de UI Aplicados
 
 1.  **Layout Limpo:** Espaçamento consistente usando o `StyleSheet`.
-2.  **Cores por Status:** Facilitam a identificação rápida da situação de cada tarefa.
+2.  **Cores por Status:** Facilitam a identificação rápida (ex: Vermelho para pendente, Amarelo para em andamento, Verde para concluída).
 3.  **Loading:** Feedback visual enquanto o app busca dados da API ou do AsyncStorage.
-4.  **Empty State Amigável:** Mensagens claras quando a lista está vazia.
+4.  **Feedback ao Salvar:** Mensagem de sucesso (toast ou alert) ao cadastrar/editar.
+5.  **Confirmação ao Excluir:** O app deve obrigatoriamente pedir confirmação do usuário antes de deletar uma tarefa.
+6.  **Empty State Amigável:** Mensagens claras quando a lista está vazia.
 
 ---
 [Próximo: Persistência e APIs Externas](./08-persistencia-e-api.md)
