@@ -26,17 +26,17 @@ export function AppRoutes() {
       <Tab.Screen 
         name="Home" 
         component={HomeStackRoutes} 
-        options={{ title: 'Home' }}
+        options={{ headerShown: false, title: 'Home' }}
       />
       <Tab.Screen 
         name="Tasks" 
         component={TaskStackRoutes} 
-        options={{ title: 'Tarefas' }}
+        options={{ headerShown: false, title: 'Tarefas' }}
       />
       <Tab.Screen 
         name="Settings" 
         component={SettingsStackRoutes} 
-        options={{ title: 'Configurações' }}
+        options={{ headerShown: false, title: 'Configurações' }}
       />
     </Tab.Navigator>
   );

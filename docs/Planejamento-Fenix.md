@@ -1,8 +1,11 @@
 --//--
 busque os seguintes cards no fenix knowladge e verifique se foram implementados seguindo as boas práticas: 
-* FIAP-0012 [Story] — S2.2 — Persistência de Sessão e Auto-login -- backlog
-    * FIAP-0025 [Task] — Integrar AsyncStorage no AuthContext — salvar e restaurar sessão -- backlog
-    * FIAP-0026 [Task] — Implementar loading state no boot — exibir splash enquanto verifica sessão -- backlog
+* FIAP-0014 [Story] — S3.1 — AppRoutes: Bottom Tabs e Stacks por Aba -- em andamento
+       * FIAP-0034 [Task] — Criar routes/TabRoutes.tsx — Bottom Tab Navigator com 3 abas -- em andamento
+       * FIAP-0035 [Task] — Criar routes/TaskStackRoutes.tsx — Stack TaskList → TaskForm → TaskDetail -- em andamento
+       * FIAP-0050 [Task] — Criar HomeStackRoutes.tsx e SettingsStackRoutes.tsx -- em andamento
+       * FIAP-0051 [Task] — Criar routes/AppRoutes.tsx — orquestrador da área logada -- em andamento
+       * FIAP-0052 [Task] — Configurar App.tsx — providers, NavigationContainer e switch de rotas -- em andamento
 
 ----
 Quero que não deixe nada para traz e que confira sempre 2 vezes para ter certeza que não esqueceu de nada. Eu preciso que revise tudo que foi feito com o pensamento de que tem erro, e preciso encontralo; No /code-review quero que siga as boas praticas de desenvolvimento na auditoria ( e deve especificar o que se trata o code review para identificação posterior), sempre confime pelo menos 2 vezes afim de ver se deixou algum bug ou code smell, e assim que terminar escreva um documento detalhado em @docs/code-review, pois não permito falhas, nem de lógica, nem performace muito menos segurança, para isso confime com o CVE bugs que possa ter, se encontrar algum erro, volte e concerte o erro e repita o processo. Se estiver tudo completamente implementado, validado e testado, quero que mova somente os cards revisados card para Done no fenix
