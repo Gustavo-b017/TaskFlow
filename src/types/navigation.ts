@@ -1,7 +1,15 @@
 export type TaskStackParamList = {
-  TaskList: undefined;                  // sem parâmetros
-  TaskForm: { taskId?: string };        // opcional: undefined = criação, string = edição
-  TaskDetail: { taskId: string };       // obrigatório: ID da tarefa a exibir
+  TaskList: undefined;
+  TaskForm: { taskId?: string };
+  TaskDetail: { taskId: string };
+};
+
+export type HomeStackParamList = {
+  Home: undefined;
+};
+
+export type SettingsStackParamList = {
+  Settings: undefined;
 };
 
 export type TabParamList = {

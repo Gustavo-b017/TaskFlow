@@ -1,8 +1,8 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import HomeScreen from '../screens/home/HomeScreen';
-import TaskListScreen from '../screens/tasks/TaskListScreen';
-import SettingsScreen from '../screens/settings/SettingsScreen';
+import { HomeStackRoutes } from './HomeStackRoutes';
+import { TaskStackRoutes } from './TaskStackRoutes';
+import { SettingsStackRoutes } from './SettingsStackRoutes';
 import { TabParamList } from '../types/navigation';
 import { useAuth } from '../hooks/useAuth';
 
@@ -23,9 +23,22 @@ export function AppRoutes() {
         tabBarInactiveTintColor: '#8E8E93',
       }}
     >
-      <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Tasks" component={TaskListScreen} />
-      <Tab.Screen name="Settings" component={SettingsScreen} />
+      <Tab.Screen 
+        name="Home" 
+        component={HomeStackRoutes} 
+        options={{ title: 'Home' }}
+      />
+      <Tab.Screen 
+        name="Tasks" 
+        component={TaskStackRoutes} 
+        options={{ title: 'Tarefas' }}
+      />
+      <Tab.Screen 
+        name="Settings" 
+        component={SettingsStackRoutes} 
+        options={{ title: 'Configurações' }}
+      />
     </Tab.Navigator>
   );
 }
+
