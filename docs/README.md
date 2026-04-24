@@ -1,74 +1,53 @@
-# 📚 Guia Educacional: TaskFlow App
+# TaskFlow App — Documentação Técnica
 
-Bem-vindo ao repositório educacional do **TaskFlow App**. Este projeto foi desenvolvido com o objetivo de ensinar os fundamentos do **React Native com TypeScript** do zero, seguindo uma arquitetura profissional e organizada.
-
-> **Nota:** Este projeto serve como guia de estudo e projeto final de avaliação. Siga cada capítulo para entender como construir um app mobile completo.
+TaskFlow é um aplicativo mobile open source de gerenciamento de tarefas pessoais construído com React Native e TypeScript. O projeto tem finalidade educacional e serve como referência prática para o ensino de desenvolvimento mobile moderno, cobrindo desde fundamentos do React Native até padrões de arquitetura profissional.
 
 ---
 
-## 🗺️ O Mapa de Aprendizado
+## Mapa de Capitulos
 
-Preparamos uma sequência lógica para você dominar o desenvolvimento:
+A documentação está organizada em capítulos sequenciais. Leia na ordem para construir o entendimento de forma progressiva.
 
-1. [**Objetivos e Tecnologias**](./01-objetivos-e-tecnologias.md)
-   - O que vamos construir e as ferramentas que vamos usar.
-
-2. [**Arquitetura e Modularização**](./02-arquitetura-e-pastas.md)
-   - Como organizar um projeto para ele ser escalável e fácil de manter.
-
-3. [**Tipagem Forte com TypeScript**](./03-modelagem-e-typescript.md)
-   - Por que o `any` é proibido e como modelar nossos dados corretamente.
-
-4. [**Autenticação e Regras de Negócio**](./04-autenticacao-e-fluxo.md)
-   - Como gerenciar login de Administradores e Usuários comuns.
-
-5. [**Navegação Profissional**](./05-navegacao-profissional.md)
-   - Combinando Stack (Pilha) e Bottom Tabs (Abas) da forma correta.
-
-6. [**Estado Global com Context API**](./06-estado-global-context-api.md)
-   - Como compartilhar dados (Auth, Tarefas, Tema) entre todas as telas.
-
-7. [**UI e Componentização**](./07-componentizacao-e-ui.md)
-   - Criando componentes reutilizáveis e interfaces modernas.
-
-8. [**Persistência e APIs Externas**](./08-persistencia-e-api.md)
-   - Como salvar dados no dispositivo e consumir serviços da internet.
+| Arquivo | Conteúdo |
+|---|---|
+| [00-visao-geral.md](./00-visao-geral.md) | O que é o app, tecnologias utilizadas e o que o projeto ensina |
+| [01-arquitetura-e-shared.md](./01-arquitetura-e-shared.md) | Estrutura de pastas, pasta shared/, separação de responsabilidades |
+| [02-tipos-e-modelos.md](./02-tipos-e-modelos.md) | Modelos de dados, TypeScript, tipagem de navegação |
+| [03-autenticacao-e-permissoes.md](./03-autenticacao-e-permissoes.md) | Login, perfis de usuário, matriz de permissões por role |
+| [04-navegacao.md](./04-navegacao.md) | Stack e Tabs, HomeStack, TaskStack e SettingsStack |
+| [05-estado-global-e-hooks.md](./05-estado-global-e-hooks.md) | AuthContext, TaskContext, ThemeContext e hooks customizados |
+| [06-crud-e-regras-de-negocio.md](./06-crud-e-regras-de-negocio.md) | CRUD completo, validações e regras de negócio |
+| [07-componentes-e-ui-mobile.md](./07-componentes-e-ui-mobile.md) | Componentes, mobile-first, FlatList e UI |
+| [08-persistencia-e-api.md](./08-persistencia-e-api.md) | AsyncStorage, consumo de API externa, estados de loading e erro |
+| [09-padroes-e-padronizacao.md](./09-padroes-e-padronizacao.md) | Convenções, nomenclatura, shared/ e diferenciais do projeto |
 
 ---
 
-## 🎓 Requisitos para Entrega (Resumo da Prova)
+## Criterios de Avaliacao
 
-Se você está usando este guia para sua avaliação, certifique-se de cumprir estes pontos:
-- [ ] **CRUD Completo:** Criar, Listar, Editar e Excluir tarefas.
-- [ ] **Navegação:** Stack + Tabs implementados.
-- [ ] **Armazenamento:** Persistência com AsyncStorage.
-- [ ] **API:** Consumir uma API externa (ex: JSONPlaceholder).
-- [ ] **TypeScript:** Sem o uso de `any`.
-- [ ] **Modularização:** Seguir a estrutura de pastas proposta.
-
----
-*Data de Entrega Final: 29/04/2026*
-
-## 📽️ Requisitos para Entrega
-
-A entrega deve ser feita via Microsoft Teams e conter:
-1. **Código Completo:** Projeto funcional seguindo a arquitetura.
-2. **Vídeo Demonstrativo:** Entre 3 a 7 minutos mostrando Navegação, CRUD, Persistência e API.
-3. **Identificação:** Nome e RM dos integrantes (máximo 5 pessoas por grupo).
-
-## 📊 Critérios de Avaliação
-
-- **Funcionalidade (45%):** CRUD, navegação, AsyncStorage e API funcionando.
-- **Código (25%):** Limpo, modularizado e 100% tipado (sem `any`).
-- **UI (20%):** Interface consistente, layout limpo e feedbacks visuais.
-- **Apresentação (10%):** Qualidade e clareza do vídeo demonstrativo.
+| Criterio | Peso | O que sera avaliado |
+|---|---|---|
+| Funcionalidade | 45% | CRUD completo, navegacao Stack + Tabs, persistencia com AsyncStorage e consumo de API externa funcionando corretamente |
+| Codigo | 25% | Codigo limpo, modularizado e 100% tipado — nenhum uso de `any` e logica de negocio fora das screens |
+| UI | 20% | Interface consistente, layout limpo, feedbacks visuais e comportamento mobile-first |
+| Apresentacao | 10% | Qualidade e clareza do video demonstrativo |
 
 ---
-# 📚 Referências Oficiais
 
-Para aprofundar seus conhecimentos, consulte a documentação oficial das tecnologias utilizadas:
+## Requisitos de Entrega
 
--   [React Native - Components and APIs](https://reactnative.dev/docs/components-and-apis)
--   [Expo Documentation](https://docs.expo.dev/)
--   [React Navigation](https://reactnavigation.org/)
--   [TypeScript Documentation](https://www.typescriptlang.org/docs/)
+- Codigo completo e funcional seguindo a arquitetura definida nesta documentacao
+- Video demonstrativo entre 3 e 7 minutos mostrando navegacao, CRUD, persistencia com AsyncStorage e consumo de API
+- Entrega realizada via Microsoft Teams
+- Grupos de no maximo 5 pessoas
+- O video e o codigo devem incluir o nome completo e o RM de todos os integrantes do grupo
+- **Data de entrega: 29/04/2026**
+
+---
+
+## Referencias Oficiais
+
+- [React Native — Components and APIs](https://reactnative.dev/docs/components-and-apis)
+- [Expo Documentation](https://docs.expo.dev/)
+- [React Navigation](https://reactnavigation.org/)
+- [TypeScript Documentation](https://www.typescriptlang.org/docs/)

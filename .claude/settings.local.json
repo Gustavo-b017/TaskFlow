@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__fenix__fenix_health_check",
+      "mcp__fenix__team",
+      "mcp__fenix__work_items",
+      "mcp__fenix__docs"
+    ]
+  }
+}
