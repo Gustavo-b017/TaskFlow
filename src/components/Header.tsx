@@ -1,9 +1,11 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useAuth } from '../hooks/useAuth';
+import { useTreatment } from '../hooks/useTreatment';
 
 export function Header() {
   const { user, signOut } = useAuth();
+  const { treatment } = useTreatment();
 
   return (
     <View style={styles.container}>
@@ -14,7 +16,9 @@ export function Header() {
           </Text>
         </View>
         <View>
-          <Text style={styles.userName}>{user?.name || 'Usuário'}</Text>
+          <Text style={styles.userName}>
+            {treatment ? `${treatment} ` : ''}{user?.name || 'Usuário'}
+          </Text>
           <Text style={styles.userRole}>
             {user?.role === 'admin' ? 'Administrador' : 'Colaborador'}
           </Text>
