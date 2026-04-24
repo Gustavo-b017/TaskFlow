@@ -1,41 +1,47 @@
 import React, { useState } from 'react';
 import { 
-  SafeAreaView, 
-  KeyboardAvoidingView, 
+  View, 
   Text, 
   StyleSheet, 
+  SafeAreaView, 
+  KeyboardAvoidingView, 
   Platform,
-  View
+  Alert 
 } from 'react-native';
 import { useAuth } from '../../hooks/useAuth';
-import { CustomButton } from '../../shared/components/CustomButton';
 import { CustomInput } from '../../shared/components/CustomInput';
+import { CustomButton } from '../../shared/components/CustomButton';
 
 export default function LoginScreen() {
   const { signIn } = useAuth();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState<{ username?: string; password?: string }>({});
 
-  async function handleLogin() {
-    if (!username || !password) {
-      setError('Preencha todos os campos.');
-      return;
-    }
+  const validate = () => {
+    const newErrors: { username?: string; password?: string } = {};
+    if (!username.trim()) newErrors.username = 'O usuário é obrigatório';
+    if (!password.trim()) newErrors.password = 'A senha é obrigatória';
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
-    setError(null);
+  const handleLogin = async () => {
+    setErrors({}); // Limpa erros prévios antes de validar
+    if (!validate()) return;
+
     setLoading(true);
     try {
       await signIn(username, password);
-      // Redirecionamento automático via AuthContext no App.tsx
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Usuário ou senha inválidos.';
-      setError(errorMessage);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Falha na autenticação';
+      Alert.alert('Erro', message);
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -44,36 +50,46 @@ export default function LoginScreen() {
         style={styles.content}
       >
         <View style={styles.header}>
-          <Text style={styles.title}>TaskFlow</Text>
-          <Text style={styles.subtitle}>Gerencie suas tarefas com facilidade</Text>
+          <Text style={styles.logo}>TaskFlow</Text>
+          <Text style={styles.subtitle}>Gerencie suas tarefas com eficiência</Text>
         </View>
 
         <View style={styles.form}>
-          <CustomInput 
-            label="Usuário" 
-            value={username} 
-            onChangeText={setUsername}
+          <CustomInput
+            label="Usuário"
+            placeholder="Digite seu usuário"
+            value={username}
+            onChangeText={(text) => {
+              setUsername(text);
+              if (errors.username) setErrors(prev => ({ ...prev, username: undefined }));
+            }}
+            error={errors.username}
             autoCapitalize="none"
           />
-          <CustomInput 
-            label="Senha" 
-            value={password} 
-            onChangeText={setPassword} 
-            secureTextEntry 
+
+          <CustomInput
+            label="Senha"
+            placeholder="Digite sua senha"
+            value={password}
+            onChangeText={(text) => {
+              setPassword(text);
+              if (errors.password) setErrors(prev => ({ ...prev, password: undefined }));
+            }}
+            error={errors.password}
+            secureTextEntry
           />
-          
-          {error && (
-            <View style={styles.errorContainer}>
-              <Text style={styles.errorText}>{error}</Text>
-            </View>
-          )}
+
+          <View style={styles.spacer} />
 
           <CustomButton 
             label="Entrar" 
             onPress={handleLogin} 
-            loading={loading} 
-            style={styles.button}
+            loading={loading}
           />
+          
+          <Text style={styles.hint}>
+            Dica: admin / 123 ou user / 123
+          </Text>
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -83,52 +99,45 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f4f4f4',
+    backgroundColor: '#F2F2F7',
   },
   content: {
     flex: 1,
     justifyContent: 'center',
-    paddingHorizontal: 24,
+    padding: 24,
   },
   header: {
     alignItems: 'center',
-    marginBottom: 40,
+    marginBottom: 48,
   },
-  title: {
-    fontSize: 32,
+  logo: {
+    fontSize: 42,
     fontWeight: 'bold',
     color: '#007AFF',
+    letterSpacing: -1,
   },
   subtitle: {
     fontSize: 16,
-    color: '#666666',
+    color: '#8E8E93',
     marginTop: 8,
   },
   form: {
-    width: '100%',
     backgroundColor: '#FFFFFF',
-    padding: 24,
     borderRadius: 16,
+    padding: 20,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
+    shadowRadius: 12,
+    elevation: 5,
   },
-  errorContainer: {
-    backgroundColor: '#FFE5E5',
-    padding: 10,
-    borderRadius: 8,
-    marginVertical: 8,
-    borderWidth: 1,
-    borderColor: '#FF3B30',
+  spacer: {
+    height: 12,
   },
-  errorText: {
-    color: '#FF3B30',
-    fontSize: 14,
+  hint: {
+    fontSize: 12,
+    color: '#8E8E93',
     textAlign: 'center',
-  },
-  button: {
     marginTop: 16,
   },
 });
