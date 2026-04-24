@@ -1,5 +1,7 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { User } from '../types/user';
+import { STORAGE_KEYS } from '../shared/constants/storageKeys';
 
 // Modelo estrito para a fonte de dados hardcoded (contém password)
 interface AuthUserSource extends User {
@@ -18,11 +20,33 @@ const users: AuthUserSource[] = [
   { id: 2, username: 'user',  password: '123', role: 'user',  name: 'Usuário Comum' },
 ];
 
-export const AuthContext = createContext<AuthContextData | null>(null);
+export const AuthContext = createContext<AuthContextData>({} as AuthContextData);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(false); // Inicia como false conforme requisito da S1.3
+  const [loading, setLoading] = useState(true); // Inicia como true para o boot
+
+  useEffect(() => {
+    async function loadStorageData() {
+      try {
+        const storagedUser = await AsyncStorage.getItem(STORAGE_KEYS.USER);
+        if (storagedUser) {
+          try {
+            setUser(JSON.parse(storagedUser));
+          } catch (parseError) {
+            // Se o JSON estiver corrompido, limpa o storage para segurança
+            await AsyncStorage.removeItem(STORAGE_KEYS.USER);
+          }
+        }
+      } catch (error) {
+        // Falha silenciosa no boot, usuário precisará logar novamente
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadStorageData();
+  }, []);
 
   async function signIn(username: string, password: string): Promise<void> {
     setLoading(true);
@@ -34,8 +58,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (!found) {
         throw new Error('Credenciais inválidas');
       }
+
       // Removemos a senha e retornamos apenas o domínio User
       const { password: _, ...userDomain } = found;
+
+      await AsyncStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(userDomain));
       setUser(userDomain);
     } finally {
       setLoading(false);
@@ -43,8 +70,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   async function signOut(): Promise<void> {
-    // Nota: A limpeza do AsyncStorage será implementada na S2.2
-    setUser(null);
+    setLoading(true);
+    try {
+      await AsyncStorage.removeItem(STORAGE_KEYS.USER);
+      setUser(null);
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (

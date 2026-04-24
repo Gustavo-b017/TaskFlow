@@ -3,26 +3,36 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useAuth } from '../hooks/useAuth';
 import { useTreatment } from '../hooks/useTreatment';
 
-export function Header() {
+interface HeaderProps {
+  title?: string;
+}
+
+export function Header({ title }: HeaderProps) {
   const { user, signOut } = useAuth();
   const { treatment } = useTreatment();
 
   return (
     <View style={styles.container}>
       <View style={styles.userSection}>
-        <View style={styles.avatar}>
-          <Text style={styles.avatarText}>
-            {user?.name.charAt(0).toUpperCase() || 'U'}
-          </Text>
-        </View>
-        <View>
-          <Text style={styles.userName}>
-            {treatment ? `${treatment} ` : ''}{user?.name || 'Usuário'}
-          </Text>
-          <Text style={styles.userRole}>
-            {user?.role === 'admin' ? 'Administrador' : 'Colaborador'}
-          </Text>
-        </View>
+        {title ? (
+          <Text style={styles.title}>{title}</Text>
+        ) : (
+          <>
+            <View style={styles.avatar}>
+              <Text style={styles.avatarText}>
+                {user?.name.charAt(0).toUpperCase() || 'U'}
+              </Text>
+            </View>
+            <View>
+              <Text style={styles.userName}>
+                {treatment ? `${treatment} ` : ''}{user?.name || 'Usuário'}
+              </Text>
+              <Text style={styles.userRole}>
+                {user?.role === 'admin' ? 'Administrador' : 'Colaborador'}
+              </Text>
+            </View>
+          </>
+        )}
       </View>
 
       <TouchableOpacity onPress={signOut} style={styles.logoutButton} activeOpacity={0.7}>
@@ -35,19 +45,24 @@ export function Header() {
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    height: 80,
+    height: 90, // Aumentado ligeiramente para melhor respiro
     backgroundColor: '#FFFFFF',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 20,
-    paddingTop: 20,
+    paddingTop: 30, // Ajustado para SafeArea
     borderBottomWidth: 1,
     borderBottomColor: '#EEEEEE',
   },
   userSection: {
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#000',
   },
   avatar: {
     width: 40,
