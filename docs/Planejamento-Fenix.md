@@ -1,17 +1,20 @@
 --//--
 busque os seguintes cards no fenix knowladge e verifique se foram implementados seguindo as boas práticas: 
-* FIAP-0056 [Story] — S3.2 — AuthRoutes e Orquestração Raiz no App.tsx -- em andamento
-   * FIAP-0057 [Task] — Criar routes/AuthRoutes.tsx — Stack isolado com LoginScreen -- em andamento
+* FIAP-0028 [Story] — S4.2 — taskStorage, Validações e Filtros -- backlog
+       * FIAP-0032 [Task] — Criar src/services/taskStorage.ts — saveTasks e loadTasks -- backlog
+       * FIAP-0033 [Task] — Integrar taskStorage no TaskContext — carregar no boot e salvar em cada mutação -- backlog
+
 
 ----
-Quero que não deixe nada para traz e que confira sempre 2 vezes para ter certeza que não esqueceu de nada. Eu preciso que revise tudo que foi feito com o pensamento de que tem erro, e preciso encontralo; No /code-review quero que siga as boas praticas de desenvolvimento na auditoria ( e deve especificar o que se trata o code review para identificação posterior), sempre confime pelo menos 2 vezes afim de ver se deixou algum bug ou code smell, e assim que terminar escreva um documento detalhado em @docs/code-review, pois não permito falhas, nem de lógica, nem performace muito menos segurança, para isso confime com o CVE bugs que possa ter, se encontrar algum erro, volte e concerte o erro e repita o processo. Se estiver tudo completamente implementado, validado e testado, quero que mova somente os cards revisados card para Done no fenix
+Quero que não deixe nada para traz e que confira sempre 2 vezes para ter certeza que não esqueceu de nada. Eu preciso que revise tudo que foi feito com o pensamento de que tem erro, e preciso encontralo; No /code-review quero que siga as boas praticas de desenvolvimento na auditoria ( e deve especificar o que se trata o code review para identificação posterior), sempre confime pelo menos 2 vezes afim de ver se deixou algum bug ou code smell, e assim que terminar escreva um documento detalhado em @docs/code-review, pois não permito falhas, nem de lógica, nem de string (erro de portugues), nem performace muito menos segurança, para isso confime com o CVE bugs que possa ter, se encontrar algum erro, volte e concerte o erro e repita o processo. Se estiver tudo completamente implementado, validado e testado, quero que mova somente os cards revisados card para Done no fenix
 
 --//--
 
 busque os seguintes cards no fenix knowladge e os implemente:
 
-* FIAP-0056 [Story] — S3.2 — AuthRoutes e Orquestração Raiz no App.tsx -- em andamento
-   * FIAP-0057 [Task] — Criar routes/AuthRoutes.tsx — Stack isolado com LoginScreen -- em andamento
+* FIAP-0028 [Story] — S4.2 — taskStorage, Validações e Filtros -- backlog
+       * FIAP-0032 [Task] — Criar src/services/taskStorage.ts — saveTasks e loadTasks -- backlog
+       * FIAP-0033 [Task] — Integrar taskStorage no TaskContext — carregar no boot e salvar em cada mutação -- backlog
 ----
 Quero que não deixe nada para traz e que confira sempre 2 vezes para ter certeza que não esqueceu de nada. Eu preciso que quando estiver implementando siga as boas praticas de desenvolvimentom documente o que fez, sempre confime se deixou algum bug ou code smell, e assim que terminar de criar ou editar uma pagina, realize um code review, pois não permito falhas, nem de lógica, nem performace muito menos segurança, para isso confime com o CVE bugs que possa ter, se encontrar algum erro, volte e concerte o erro. E depois que não tiver nenhum erro, preciso que crie testes unitarios para testar o fluxo e testar o código estressando ele para verificar se está resiliente e sem nenhum tipo de falha, se encontrar algum problema durante os testes, crie um plano e resolva.
 Caso o código esteja 100% testado e validado, e que não aponte nenhum erro dutante os teste e nem o estresse, quero que mova os cards feitos ou alterados/ para Code Review no fenix
@@ -69,22 +72,21 @@ exemplo:
        * FIAP-0050 [Task] — Criar HomeStackRoutes.tsx e SettingsStackRoutes.tsx -- em andamento -- 100% feito
        * FIAP-0051 [Task] — Criar routes/AppRoutes.tsx — orquestrador da área logada -- em andamento -- 100% feito
        * FIAP-0052 [Task] — Configurar App.tsx — providers, NavigationContainer e switch de rotas -- em andamento -- 100% feito
-   * FIAP-0056 [Story] — S3.2 — AuthRoutes e Orquestração Raiz no App.tsx -- em andamento
-       * FIAP-0057 [Task] — Criar routes/AuthRoutes.tsx — Stack isolado com LoginScreen -- em andamento
+   * FIAP-0056 [Story] — S3.2 — AuthRoutes e Orquestração Raiz no App.tsx -- em andamento -- 100% feito
+       * FIAP-0057 [Task] — Criar routes/AuthRoutes.tsx — Stack isolado com LoginScreen -- em andamento -- 100% feito
 
 
-* FIAP-0006 — F4 — Estado Global e CRUD de Tarefas -- backlog
-   * FIAP-0013 [Story] — S4.1 — TaskContext e useTasks Hook -- backlog
-       * FIAP-0029 [Task] — Criar src/context/TaskContext.tsx — estado inicial, TaskContextData e TaskProvider -- backlog
-       * FIAP-0030 [Task] — Implementar addTask no TaskContext — ID automático, timestamps e validação -- backlog
-       * FIAP-0031 [Task] — Implementar updateTask e removeTask no TaskContext -- backlog
-       * FIAP-0047 [Task] — Criar src/hooks/useTasks.ts com validação de Provider -- backlog
-       * FIAP-0048 [Task] — Implementar validações de formulário na TaskFormScreen -- backlog
-       * FIAP-0049 [Task] — Implementar filtro por status e confirmação de exclusão -- backlog
-   * FIAP-0028 [Story] — S4.2 — taskStorage, Validações e Filtros -- backlog
-       * FIAP-0032 [Task] — Criar src/services/taskStorage.ts — saveTasks e loadTasks -- backlog
-       * FIAP-0033 [Task] — Integrar taskStorage no TaskContext — carregar no boot e salvar em cada mutação -- backlog
-
+* FIAP-0006 — F4 — Estado Global e CRUD de Tarefas -- backlog -- 100% feito
+   * FIAP-0013 [Story] — S4.1 — TaskContext e useTasks Hook -- backlog -- 100% feito
+       * FIAP-0029 [Task] — Criar src/context/TaskContext.tsx — estado inicial, TaskContextData e TaskProvider -- backlog -- 100% feito
+       * FIAP-0030 [Task] — Implementar addTask no TaskContext — ID automático, timestamps e validação -- backlog -- 100% feito
+       * FIAP-0031 [Task] — Implementar updateTask e removeTask no TaskContext -- backlog -- 100% feito
+       * FIAP-0047 [Task] — Criar src/hooks/useTasks.ts com validação de Provider -- backlog -- 100% feito
+       * FIAP-0048 [Task] — Implementar validações de formulário na TaskFormScreen -- backlog -- 100% feito
+       * FIAP-0049 [Task] — Implementar filtro por status e confirmação de exclusão -- backlog -- 100% feito
+   * FIAP-0028 [Story] — S4.2 — taskStorage, Validações e Filtros -- backlog -- 100% feito
+       * FIAP-0032 [Task] — Criar src/services/taskStorage.ts — saveTasks e loadTasks -- backlog -- 100% feito
+       * FIAP-0033 [Task] — Integrar taskStorage no TaskContext — carregar no boot e salvar em cada mutação -- backlog -- 100% feito
 
 * FIAP-0008 — F5 — Componentes e UI Mobile -- backlog
    * FIAP-0015 [Story] — S5.1 — Componentes Shared (Sem Conhecimento de Domínio) -- backlog
