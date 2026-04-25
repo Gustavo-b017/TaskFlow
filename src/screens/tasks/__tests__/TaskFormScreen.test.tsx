@@ -1,5 +1,6 @@
 import React from 'react';
-import { render, fireEvent, act } from '@testing-library/react-native';
+import { render, fireEvent, act, waitFor } from '@testing-library/react-native';
+import { Alert } from 'react-native';
 import { TaskFormScreen } from '../TaskFormScreen';
 
 const mockGoBack = jest.fn();
@@ -106,6 +107,25 @@ describe('TaskFormScreen — modo criação', () => {
     expect(mockGoBack).toHaveBeenCalled();
     expect(mockAddTask).not.toHaveBeenCalled();
   });
+
+  it('exibe alerta de erro quando addTask rejeita', async () => {
+    mockAddTask.mockRejectedValueOnce(new Error('falha inesperada'));
+    const alertSpy = jest.spyOn(Alert, 'alert');
+
+    const { getByTestId } = render(<TaskFormScreen />);
+    fireEvent.changeText(getByTestId('input-title'), 'Nova tarefa');
+
+    await act(async () => {
+      fireEvent.press(getByTestId('btn-submit'));
+    });
+
+    await waitFor(() => {
+      expect(alertSpy).toHaveBeenCalledWith(
+        'Erro',
+        'Não foi possível salvar a tarefa. Tente novamente.'
+      );
+    });
+  });
 });
 
 describe('TaskFormScreen — modo edição', () => {
@@ -118,6 +138,8 @@ describe('TaskFormScreen — modo edição', () => {
     const { getByTestId } = render(<TaskFormScreen />);
     expect(getByTestId('input-title').props.value).toBe('Tarefa existente');
     expect(getByTestId('input-description').props.value).toBe('Descrição existente');
+    expect(getByTestId('input-category').props.value).toBe('Estudos');
+    expect(getByTestId('input-category-icon').props.value).toBe('📚');
   });
 
   it('chama updateTask em vez de addTask ao salvar no modo edição', async () => {

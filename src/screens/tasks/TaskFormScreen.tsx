@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   SafeAreaView,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -35,7 +36,7 @@ const PRIORITY_OPTIONS: { label: string; value: TaskPriority }[] = [
 export function TaskFormScreen() {
   const navigation = useNavigation<FormNav>();
   const route = useRoute<FormRoute>();
-  const { tasks, addTask, updateTask } = useTasks();
+  const { tasks, loading, addTask, updateTask } = useTasks();
 
   const taskId = route.params?.taskId;
   const isEditing = Boolean(taskId);
@@ -49,6 +50,16 @@ export function TaskFormScreen() {
   const [categoryIcon, setCategoryIcon] = useState(existingTask?.categoryIcon ?? '');
   const [titleError, setTitleError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+
+  if (isEditing && loading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.loadingContent}>
+          <ActivityIndicator size="large" color="#007AFF" />
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   const isValid = title.trim().length > 0;
 
@@ -172,6 +183,7 @@ export function TaskFormScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F2F2F7' },
+  loadingContent: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   content: { padding: 24, paddingBottom: 40 },
   sectionLabel: {
     fontSize: 14,
