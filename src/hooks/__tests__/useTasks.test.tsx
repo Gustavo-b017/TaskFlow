@@ -23,19 +23,21 @@ beforeEach(() => {
   (taskStorage.saveTasks as jest.Mock).mockResolvedValue(undefined);
 });
 
-it('retorna o contexto com tasks, loading e as funções quando dentro do TaskProvider', async () => {
-  const { result } = renderHook(() => useTasks(), { wrapper });
-  await act(async () => {});
+describe('useTasks', () => {
+  it('retorna o contexto com tasks, loading e as funções quando dentro do TaskProvider', async () => {
+    const { result } = renderHook(() => useTasks(), { wrapper });
+    await act(async () => {});
 
-  expect(result.current.tasks).toEqual([]);
-  expect(result.current.loading).toBe(false);
-  expect(typeof result.current.addTask).toBe('function');
-  expect(typeof result.current.updateTask).toBe('function');
-  expect(typeof result.current.removeTask).toBe('function');
-});
+    expect(result.current.tasks).toEqual([]);
+    expect(result.current.loading).toBe(false);
+    expect(typeof result.current.addTask).toBe('function');
+    expect(typeof result.current.updateTask).toBe('function');
+    expect(typeof result.current.removeTask).toBe('function');
+  });
 
-it('lança erro "useTasks deve ser usado dentro de TaskProvider" quando fora do provider', () => {
-  expect(() => renderHook(() => useTasks())).toThrow(
-    'useTasks deve ser usado dentro de TaskProvider'
-  );
+  it('lança erro "useTasks deve ser usado dentro de TaskProvider" quando fora do provider', () => {
+    expect(() => renderHook(() => useTasks())).toThrow(
+      'useTasks deve ser usado dentro de TaskProvider'
+    );
+  });
 });

@@ -7,7 +7,7 @@ export interface TaskContextData {
   tasks: Task[];
   loading: boolean;
   addTask: (task: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => Promise<void>;
-  updateTask: (id: string, data: Partial<Task>) => Promise<void>;
+  updateTask: (id: string, data: Omit<Partial<Task>, 'id' | 'createdAt' | 'updatedAt'>) => Promise<void>;
   removeTask: (id: string) => Promise<void>;
 }
 
@@ -26,7 +26,8 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
         tasksRef.current = stored;
         setTasks(stored);
       } catch {
-        // Falha silenciosa: usuário começa com lista vazia
+        // Guarda defensiva: loadTasks suprime erros internamente e nunca lança,
+        // mas o catch preserva loading=false via finally mesmo em caso de mudança futura.
       } finally {
         setLoading(false);
       }
@@ -45,28 +46,60 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
       createdAt: now,
       updatedAt: now,
     };
-    const updated = [...tasksRef.current, newTask];
+    const previous = tasksRef.current;
+    const updated = [...previous, newTask];
     tasksRef.current = updated;
     setTasks(updated);
-    await saveTasks(updated);
+    try {
+      await saveTasks(updated);
+    } catch (error) {
+      tasksRef.current = previous;
+      setTasks(previous);
+      throw error;
+    }
   }
 
-  async function updateTask(id: string, data: Partial<Task>): Promise<void> {
-    const updated = tasksRef.current.map((task) =>
+  async function updateTask(id: string, data: Omit<Partial<Task>, 'id' | 'createdAt' | 'updatedAt'>): Promise<void> {
+    if (data.title !== undefined && !data.title.trim()) {
+      throw new Error('Título é obrigatório');
+    }
+    if (!tasksRef.current.some((t) => t.id === id)) return;
+    const previous = tasksRef.current;
+    const updated = previous.map((task) =>
       task.id === id
         ? { ...task, ...data, id, updatedAt: new Date().toISOString() }
         : task
     );
     tasksRef.current = updated;
     setTasks(updated);
-    await saveTasks(updated);
+    // ATENÇÃO: rollback captura o estado no momento da chamada.
+    // Em mutações concorrentes sem await, o rollback desta falha pode sobrescrever
+    // o estado de outra mutação bem-sucedida. Evite múltiplas mutações simultâneas.
+    try {
+      await saveTasks(updated);
+    } catch (error) {
+      tasksRef.current = previous;
+      setTasks(previous);
+      throw error;
+    }
   }
 
   async function removeTask(id: string): Promise<void> {
-    const updated = tasksRef.current.filter((task) => task.id !== id);
+    if (!tasksRef.current.some((t) => t.id === id)) return;
+    const previous = tasksRef.current;
+    const updated = previous.filter((task) => task.id !== id);
     tasksRef.current = updated;
     setTasks(updated);
-    await saveTasks(updated);
+    // ATENÇÃO: rollback captura o estado no momento da chamada.
+    // Em mutações concorrentes sem await, o rollback desta falha pode sobrescrever
+    // o estado de outra mutação bem-sucedida. Evite múltiplas mutações simultâneas.
+    try {
+      await saveTasks(updated);
+    } catch (error) {
+      tasksRef.current = previous;
+      setTasks(previous);
+      throw error;
+    }
   }
 
   return (

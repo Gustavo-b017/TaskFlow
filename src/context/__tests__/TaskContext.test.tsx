@@ -240,6 +240,66 @@ describe('TaskContext', () => {
     });
   });
 
+  describe('rollback ao falhar saveTasks', () => {
+    it('reverte addTask quando saveTasks rejeita', async () => {
+      const { result } = renderHook(() => useTasks(), { wrapper });
+      await act(async () => {});
+
+      (taskStorage.saveTasks as jest.Mock).mockRejectedValueOnce(new Error('storage cheio'));
+
+      await expect(
+        act(async () => {
+          await result.current.addTask(mockInput);
+        })
+      ).rejects.toThrow('storage cheio');
+
+      expect(result.current.tasks).toHaveLength(0);
+    });
+
+    it('reverte updateTask quando saveTasks rejeita', async () => {
+      const { result } = renderHook(() => useTasks(), { wrapper });
+      await act(async () => {});
+
+      await act(async () => {
+        await result.current.addTask(mockInput);
+      });
+
+      const originalTitle = result.current.tasks[0].title;
+      const id = result.current.tasks[0].id;
+
+      (taskStorage.saveTasks as jest.Mock).mockRejectedValueOnce(new Error('storage cheio'));
+
+      await expect(
+        act(async () => {
+          await result.current.updateTask(id, { title: 'Título novo' });
+        })
+      ).rejects.toThrow('storage cheio');
+
+      expect(result.current.tasks[0].title).toBe(originalTitle);
+    });
+
+    it('reverte removeTask quando saveTasks rejeita', async () => {
+      const { result } = renderHook(() => useTasks(), { wrapper });
+      await act(async () => {});
+
+      await act(async () => {
+        await result.current.addTask(mockInput);
+      });
+
+      const id = result.current.tasks[0].id;
+
+      (taskStorage.saveTasks as jest.Mock).mockRejectedValueOnce(new Error('storage cheio'));
+
+      await expect(
+        act(async () => {
+          await result.current.removeTask(id);
+        })
+      ).rejects.toThrow('storage cheio');
+
+      expect(result.current.tasks).toHaveLength(1);
+    });
+  });
+
   describe('removeTask', () => {
     it('remove a tarefa com o id informado', async () => {
       const { result } = renderHook(() => useTasks(), { wrapper });
@@ -284,10 +344,69 @@ describe('TaskContext', () => {
         await result.current.addTask(mockInput);
       });
 
+      jest.clearAllMocks();
+
       await act(async () => {
         await result.current.removeTask('id-inexistente');
       });
 
+      expect(result.current.tasks).toHaveLength(1);
+      expect(taskStorage.saveTasks).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('updateTask — validação e no-op', () => {
+    it('lança erro "Título é obrigatório" quando novo título é string vazia', async () => {
+      const { result } = renderHook(() => useTasks(), { wrapper });
+      await act(async () => {});
+
+      await act(async () => {
+        await result.current.addTask(mockInput);
+      });
+
+      const id = result.current.tasks[0].id;
+
+      await expect(
+        act(async () => {
+          await result.current.updateTask(id, { title: '' });
+        })
+      ).rejects.toThrow('Título é obrigatório');
+
+      expect(result.current.tasks[0].title).toBe(mockInput.title);
+    });
+
+    it('lança erro "Título é obrigatório" quando novo título contém apenas espaços', async () => {
+      const { result } = renderHook(() => useTasks(), { wrapper });
+      await act(async () => {});
+
+      await act(async () => {
+        await result.current.addTask(mockInput);
+      });
+
+      const id = result.current.tasks[0].id;
+
+      await expect(
+        act(async () => {
+          await result.current.updateTask(id, { title: '   ' });
+        })
+      ).rejects.toThrow('Título é obrigatório');
+    });
+
+    it('não chama saveTasks quando id não existe em updateTask', async () => {
+      const { result } = renderHook(() => useTasks(), { wrapper });
+      await act(async () => {});
+
+      await act(async () => {
+        await result.current.addTask(mockInput);
+      });
+
+      jest.clearAllMocks();
+
+      await act(async () => {
+        await result.current.updateTask('id-inexistente', { title: 'Novo título' });
+      });
+
+      expect(taskStorage.saveTasks).not.toHaveBeenCalled();
       expect(result.current.tasks).toHaveLength(1);
     });
   });
