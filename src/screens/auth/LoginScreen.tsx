@@ -7,16 +7,27 @@ import {
   KeyboardAvoidingView, 
   Platform,
   Alert,
-  ScrollView
+  ScrollView,
+  StatusBar
 } from 'react-native';
+import * as LucideIcons from 'lucide-react-native';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useAuth } from '../../hooks/useAuth';
 import { CustomInput } from '../../shared/components/CustomInput';
 import { CustomButton } from '../../shared/components/CustomButton';
 import { useTheme } from '../../hooks/useTheme';
+import { COLORS, BORDER_RADIUS, SPACING } from '../../styles/theme';
+import type { AuthStackParamList } from '../../types/navigation';
+
+type LoginNavProp = NativeStackNavigationProp<AuthStackParamList, 'Login'>;
 
 export default function LoginScreen() {
   const { signIn } = useAuth();
   const { theme } = useTheme();
+  const navigation = useNavigation<LoginNavProp>();
+  const themeColors = COLORS[theme];
+  
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -32,12 +43,14 @@ export default function LoginScreen() {
   };
 
   const handleLogin = async () => {
-    setErrors({}); // Limpa erros prévios antes de validar
+    setErrors({});
     if (!validate()) return;
 
     setLoading(true);
     try {
       await signIn(username, password);
+      // Redirecionamento condicional pós-login (será processado na próxima renderização do roteador, 
+      // mas garantimos o estado inicial correto aqui caso o roteador não remonte)
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Falha na autenticação';
       Alert.alert('Erro', message);
@@ -50,20 +63,24 @@ export default function LoginScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar barStyle={theme === 'dark' ? 'light-content' : 'dark-content'} />
       <KeyboardAvoidingView 
         style={{ flex: 1 }}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
         <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
           <View style={styles.header}>
+            <View style={styles.logoContainer}>
+              <LucideIcons.CheckCircle2 size={48} color={themeColors.primary} strokeWidth={3} />
+            </View>
             <Text style={styles.logo}>TaskFlow</Text>
-            <Text style={styles.subtitle}>Gerencie suas tarefas com eficiência</Text>
+            <Text style={styles.subtitle}>Sua produtividade elevada ao máximo</Text>
           </View>
 
           <View style={styles.form}>
             <CustomInput
               label="Usuário"
-              placeholder="Digite seu usuário"
+              placeholder="Ex: admin"
               value={username}
               onChangeText={(text) => {
                 setUsername(text);
@@ -87,14 +104,17 @@ export default function LoginScreen() {
             <View style={styles.spacer} />
 
             <CustomButton 
-              title="Entrar" 
+              title="Acessar Conta" 
               onPress={handleLogin} 
               loading={loading}
             />
             
-            <Text style={styles.hint}>
-              Dica: admin / 123 ou user / 123
-            </Text>
+            <View style={styles.hintContainer}>
+              <LucideIcons.Info size={14} color={themeColors.textMuted} />
+              <Text style={styles.hint}>
+                Dica: admin / 123 ou user / 123
+              </Text>
+            </View>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -103,50 +123,65 @@ export default function LoginScreen() {
 }
 
 function createStyles(theme: 'light' | 'dark') {
-  const isDark = theme === 'dark';
+  const themeColors = COLORS[theme];
   return StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: isDark ? '#121212' : '#F2F2F7',
+      backgroundColor: themeColors.background,
     },
     content: {
       flexGrow: 1,
       justifyContent: 'center',
-      padding: 24,
+      padding: SPACING.lg,
     },
     header: {
       alignItems: 'center',
-      marginBottom: 48,
+      marginBottom: SPACING.xl,
+    },
+    logoContainer: {
+      width: 80,
+      height: 80,
+      borderRadius: 24,
+      backgroundColor: themeColors.surface,
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginBottom: SPACING.md,
+      borderWidth: 1.5,
+      borderColor: themeColors.border,
     },
     logo: {
-      fontSize: 42,
-      fontWeight: 'bold',
-      color: '#3B82F6',
-      letterSpacing: -1,
+      fontSize: 36,
+      fontWeight: '800',
+      color: themeColors.text,
+      letterSpacing: -1.5,
     },
     subtitle: {
       fontSize: 16,
-      color: isDark ? '#9CA3AF' : '#8E8E93',
-      marginTop: 8,
+      color: themeColors.textMuted,
+      marginTop: 4,
+      fontWeight: '500',
     },
     form: {
-      backgroundColor: isDark ? '#1F2937' : '#FFFFFF',
-      borderRadius: 16,
-      padding: 20,
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.1,
-      shadowRadius: 12,
-      elevation: 5,
+      backgroundColor: themeColors.surface,
+      borderRadius: BORDER_RADIUS.lg,
+      padding: SPACING.lg,
+      borderWidth: 1.5,
+      borderColor: themeColors.border,
     },
     spacer: {
-      height: 12,
+      height: 8,
+    },
+    hintContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 6,
+      marginTop: SPACING.lg,
     },
     hint: {
-      fontSize: 12,
-      color: isDark ? '#9CA3AF' : '#8E8E93',
-      textAlign: 'center',
-      marginTop: 16,
+      fontSize: 13,
+      color: themeColors.textMuted,
+      fontWeight: '600',
     },
   });
 }

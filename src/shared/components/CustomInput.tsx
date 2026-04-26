@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, TextInput, StyleSheet } from 'react-native';
 import { useTheme } from '../../hooks/useTheme';
+import { COLORS, BORDER_RADIUS, SPACING } from '../../styles/theme';
 
 interface CustomInputProps {
   label: string;
@@ -27,17 +28,18 @@ export function CustomInput({
 }: CustomInputProps) {
   const { theme } = useTheme();
   const styles = createStyles(theme, !!error);
+  const themeColors = COLORS[theme];
 
   return (
     <View style={styles.container}>
       <Text style={styles.label}>{label}</Text>
       <TextInput
-        style={styles.input}
+        style={[styles.input, multiline && styles.inputMultiline]}
         value={value}
         onChangeText={onChangeText}
         secureTextEntry={secureTextEntry}
         placeholder={placeholder}
-        placeholderTextColor={theme === 'dark' ? '#6B7280' : '#9CA3AF'}
+        placeholderTextColor={themeColors.textMuted}
         multiline={multiline}
         editable={editable}
         autoCapitalize="none"
@@ -49,28 +51,38 @@ export function CustomInput({
 }
 
 function createStyles(theme: 'light' | 'dark', hasError: boolean) {
+  const themeColors = COLORS[theme];
   return StyleSheet.create({
-    container: { marginBottom: 16 },
+    container: { marginBottom: SPACING.md },
     label: {
       fontSize: 14,
-      fontWeight: '500',
-      color: theme === 'dark' ? '#F9FAFB' : '#111827',
-      marginBottom: 4,
+      fontWeight: '600',
+      color: themeColors.text,
+      marginBottom: SPACING.xs,
+      marginLeft: 4,
     },
     input: {
-      borderWidth: 1,
-      borderColor: hasError ? '#EF4444' : (theme === 'dark' ? '#374151' : '#E5E7EB'),
-      borderRadius: 8,
-      paddingHorizontal: 12,
-      paddingVertical: 10,
-      minHeight: 44,
-      color: theme === 'dark' ? '#F9FAFB' : '#111827',
-      backgroundColor: theme === 'dark' ? '#1F2937' : '#FFFFFF',
+      borderWidth: 1.5,
+      borderColor: hasError ? themeColors.error : themeColors.border,
+      borderRadius: BORDER_RADIUS.md,
+      paddingHorizontal: SPACING.md,
+      paddingVertical: SPACING.sm,
+      minHeight: 56,
+      color: themeColors.text,
+      backgroundColor: themeColors.inputBg,
+      fontSize: 16,
+    },
+    inputMultiline: {
+      minHeight: 100,
+      textAlignVertical: 'top',
+      paddingTop: SPACING.md,
     },
     errorText: {
-      color: '#EF4444',
+      color: themeColors.error,
       fontSize: 12,
       marginTop: 4,
+      marginLeft: 4,
+      fontWeight: '500',
     },
   });
 }

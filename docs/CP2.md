@@ -203,7 +203,7 @@ Navegações esperadas
 
 ## Armazenamento local (AsyncStorage)
 
-Todas as tarefas criadas ou alteradas pelo usuário devem ser persistidas localmente.
+Todas as tarefas criadas ou alteradas pelo usuário devem ser persistidas localmente no AsyncStorage, garantindo que os dados não sejam perdidos ao fechar o app.as ou alteradas pelo usuário devem ser persistidas localmente.
 
 O app deve:
 

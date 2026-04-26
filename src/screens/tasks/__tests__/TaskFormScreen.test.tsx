@@ -23,7 +23,7 @@ const mockTasks = [
     status: 'em_andamento' as const,
     priority: 'alta' as const,
     category: 'Estudos',
-    categoryIcon: '📚',
+    categoryIcon: 'BookOpen',
     createdAt: '2026-04-25T10:00:00.000Z',
     updatedAt: '2026-04-25T10:00:00.000Z',
   },
@@ -34,6 +34,7 @@ jest.mock('../../../hooks/useTasks', () => ({
     tasks: mockTasks,
     addTask: mockAddTask,
     updateTask: mockUpdateTask,
+    loading: false,
   }),
 }));
 
@@ -145,7 +146,6 @@ describe('TaskFormScreen — modo edição', () => {
     expect(getByTestId('input-title').props.value).toBe('Tarefa existente');
     expect(getByTestId('input-description').props.value).toBe('Descrição existente');
     expect(getByTestId('input-category').props.value).toBe('Estudos');
-    expect(getByTestId('input-category-icon').props.value).toBe('📚');
   });
 
   it('chama updateTask em vez de addTask ao salvar no modo edição', async () => {

@@ -1,6 +1,7 @@
 import React from 'react';
 import { TouchableOpacity, Text, ActivityIndicator, StyleSheet } from 'react-native';
 import { useTheme } from '../../hooks/useTheme';
+import { COLORS, BORDER_RADIUS, SPACING } from '../../styles/theme';
 
 interface CustomButtonProps {
   title: string;
@@ -27,11 +28,11 @@ export function CustomButton({
       style={styles.button}
       onPress={onPress}
       disabled={disabled || loading}
-      activeOpacity={0.7}
+      activeOpacity={0.6}
       testID={testID}
     >
       {loading
-        ? <ActivityIndicator color="#FFFFFF" />
+        ? <ActivityIndicator color={variant === 'secondary' ? COLORS[theme].primary : "#FFFFFF"} />
         : <Text style={styles.text}>{title}</Text>
       }
     </TouchableOpacity>
@@ -39,22 +40,35 @@ export function CustomButton({
 }
 
 function createStyles(theme: 'light' | 'dark', variant: string, disabled: boolean) {
+  const themeColors = COLORS[theme];
+  
+  let backgroundColor: string = themeColors.primary;
+  let textColor: string = '#FFFFFF';
+
+  if (variant === 'danger') {
+    backgroundColor = themeColors.error;
+  } else if (variant === 'secondary') {
+    backgroundColor = themeColors.inputBg;
+    textColor = themeColors.text;
+  }
+
   return StyleSheet.create({
     button: {
-      minHeight: 44,           // toque mínimo de 44dp
-      paddingHorizontal: 16,
-      paddingVertical: 12,
-      borderRadius: 8,
+      minHeight: 56,
+      paddingHorizontal: SPACING.lg,
+      paddingVertical: SPACING.md,
+      borderRadius: BORDER_RADIUS.full,
       alignItems: 'center',
       justifyContent: 'center',
-      backgroundColor: variant === 'danger' ? '#EF4444' : variant === 'secondary' ? (theme === 'dark' ? '#374151' : '#E5E7EB') : '#3B82F6',
-      opacity: disabled ? 0.5 : 1,
-      marginVertical: 8,
+      backgroundColor: backgroundColor,
+      opacity: disabled ? 0.4 : 1,
+      marginVertical: SPACING.sm,
     },
     text: {
-      color: variant === 'secondary' ? (theme === 'dark' ? '#FFFFFF' : '#000000') : '#FFFFFF',
+      color: textColor,
       fontSize: 16,
-      fontWeight: '600',
+      fontWeight: '700',
+      letterSpacing: 0.5,
     },
   });
 }

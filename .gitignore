@@ -42,3 +42,6 @@ yarn-error.*
 
 # test coverage
 coverage/
+
+# superpowers visual companion
+.superpowers/
