@@ -9,6 +9,7 @@ export interface TaskContextData {
   addTask: (task: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => Promise<void>;
   updateTask: (id: string, data: Omit<Partial<Task>, 'id' | 'createdAt' | 'updatedAt'>) => Promise<void>;
   removeTask: (id: string) => Promise<void>;
+  loadTasks: () => Promise<void>;
 }
 
 export const TaskContext = createContext<TaskContextData | null>(null);
@@ -19,20 +20,21 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
   // Ref garante leitura do estado mais recente mesmo em chamadas consecutivas sem re-render
   const tasksRef = useRef<Task[]>([]);
 
-  useEffect(() => {
-    async function init() {
-      try {
-        const stored = await loadTasks();
-        tasksRef.current = stored;
-        setTasks(stored);
-      } catch {
-        // Guarda defensiva: loadTasks suprime erros internamente e nunca lança,
-        // mas o catch preserva loading=false via finally mesmo em caso de mudança futura.
-      } finally {
-        setLoading(false);
-      }
+  async function loadTasksContext() {
+    try {
+      const stored = await loadTasks();
+      tasksRef.current = stored;
+      setTasks(stored);
+    } catch {
+      // Guarda defensiva: loadTasks suprime erros internamente e nunca lança,
+      // mas o catch preserva loading=false via finally mesmo em caso de mudança futura.
+    } finally {
+      setLoading(false);
     }
-    init();
+  }
+
+  useEffect(() => {
+    loadTasksContext();
   }, []);
 
   async function addTask(input: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>): Promise<void> {
@@ -103,7 +105,7 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <TaskContext.Provider value={{ tasks, loading, addTask, updateTask, removeTask }}>
+    <TaskContext.Provider value={{ tasks, loading, addTask, updateTask, removeTask, loadTasks: loadTasksContext }}>
       {children}
     </TaskContext.Provider>
   );

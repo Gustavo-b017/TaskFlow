@@ -1,13 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
+import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import type { TabParamList } from '../../types/navigation';
 import { useAuth } from '../../hooks/useAuth';
 import { useTheme } from '../../hooks/useTheme';
 import { useTreatment } from '../../hooks/useTreatment';
 import { fetchMotivationalQuote } from '../../services/api';
 import { CustomButton } from '../../shared/components/CustomButton';
 
+type HomeNav = BottomTabNavigationProp<TabParamList, 'Home'>;
+
 export default function HomeScreen() {
+  const navigation = useNavigation<HomeNav>();
   const { user } = useAuth();
   const { theme } = useTheme();
   const { treatment } = useTreatment();
@@ -24,10 +30,14 @@ export default function HomeScreen() {
       const result = await fetchMotivationalQuote();
       setQuote(result);
     } catch {
-      setError('Não foi possível carregar a frase.');
+      setError('Não foi possível carregar a frase. Verifique sua conexão.');
     } finally {
       setLoading(false);
     }
+  }
+
+  function goToTasks() {
+    navigation.navigate('Tasks');
   }
 
   const styles = createStyles(theme);
@@ -40,14 +50,18 @@ export default function HomeScreen() {
         </Text>
 
         <Text style={styles.sectionTitle}>Frase do dia</Text>
-        {loading && <ActivityIndicator color={theme === 'dark' ? '#FFFFFF' : '#000000'} />}
-        {error && (
+        {loading && <ActivityIndicator size="small" color="#3B82F6" />}
+        {error && !loading && (
           <View style={styles.errorContainer}>
             <Text style={styles.error}>{error}</Text>
             <CustomButton title="Tentar novamente" onPress={loadQuote} variant="primary" />
           </View>
         )}
-        {quote && <Text style={styles.quote}>"{quote}"</Text>}
+        {quote && !loading && <Text style={styles.quote}>"{quote}"</Text>}
+
+        <View style={styles.buttonContainer}>
+          <CustomButton title="Ver Tarefas" onPress={goToTasks} variant="primary" />
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -93,6 +107,9 @@ function createStyles(theme: 'light' | 'dark') {
       textAlign: 'center',
       marginTop: 24,
       lineHeight: 28,
+    },
+    buttonContainer: {
+      marginTop: 48,
     },
   });
 }

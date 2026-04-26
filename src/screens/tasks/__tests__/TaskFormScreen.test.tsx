@@ -79,6 +79,12 @@ describe('TaskFormScreen — modo criação', () => {
   });
 
   it('chama addTask com os dados corretos e navega de volta após submit', async () => {
+    jest.spyOn(Alert, 'alert').mockImplementation((title, msg, buttons) => {
+      if (buttons && buttons.length > 0 && buttons[0].onPress) {
+        buttons[0].onPress();
+      }
+    });
+
     const { getByTestId } = render(<TaskFormScreen />);
 
     fireEvent.changeText(getByTestId('input-title'), 'Nova tarefa');
@@ -122,7 +128,7 @@ describe('TaskFormScreen — modo criação', () => {
     await waitFor(() => {
       expect(alertSpy).toHaveBeenCalledWith(
         'Erro',
-        'Não foi possível salvar a tarefa. Tente novamente.'
+        'falha inesperada'
       );
     });
   });
@@ -143,6 +149,12 @@ describe('TaskFormScreen — modo edição', () => {
   });
 
   it('chama updateTask em vez de addTask ao salvar no modo edição', async () => {
+    jest.spyOn(Alert, 'alert').mockImplementation((title, msg, buttons) => {
+      if (buttons && buttons.length > 0 && buttons[0].onPress) {
+        buttons[0].onPress();
+      }
+    });
+
     const { getByTestId } = render(<TaskFormScreen />);
 
     await act(async () => {

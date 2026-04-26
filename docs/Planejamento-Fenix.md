@@ -1,17 +1,12 @@
 --//--
 busque os seguintes cards no fenix knowladge e verifique se foram implementados seguindo as boas práticas: 
-* FIAP-0015 [Story] — S5.1 — Componentes Shared (Sem Conhecimento de Domínio) -- backlog
-       * FIAP-0036 [Task] — Criar EmptyState.tsx em shared/components/ -- backlog
-       * FIAP-0037 [Task] — Criar StatusBadge.tsx em shared/components/ -- backlog
-       * FIAP-0038 [Task] — Aplicar useTheme() em todos os componentes shared -- backlog
-       * FIAP-0053 [Task] — Criar CustomButton.tsx em shared/components/ -- backlog
-       * FIAP-0054 [Task] — Criar CustomInput.tsx em shared/components/ -- backlog
-       * FIAP-0055 [Task] — Aplicar SafeAreaView e KeyboardAvoidingView nas telas obrigatórias -- backlog
-       * FIAP-0058 [Task] — Implementar HomeScreen — boas-vindas com nome + frase motivacional -- backlog
-       * FIAP-0059 [Task] — Implementar TaskFormScreen — formulário com validação -- backlog
-       * FIAP-0060 [Task] — Implementar TaskDetailScreen — exibição completa + botões admin -- backlog
-       * FIAP-0061 [Task] — Implementar SettingsScreen — tema, perfil e tratamento -- backlog
-       * FIAP-0079 [Task] — [DIFERENCIAL] Implementar animações de transição -- backlog
+* FIAP-0016 [Story] — S6.1 — API Externa: Frases Motivacionais e Categorias -- backlog
+       * FIAP-0039 [Task] — Criar services/api.ts — fetchCategories e fetchMotivationalQuote -- backlog
+       * FIAP-0040 [Task] — Implementar consumo de frases motivacionais na HomeScreen -- backlog
+       * FIAP-0075 [Task] — Integrar fetchCategories na TaskFormScreen -- To Do
+   * FIAP-0017 [Story] — S6.2 — ThemeContext e Dark/Light Mode -- backlog
+       * FIAP-0041 [Task] — Implementar ThemeContext e hook useTheme com persistência -- backlog
+       * FIAP-0042 [Task] — Aplicar alternância de tema na SettingsScreen e componentes -- backlog
 
 ----
 Quero que não deixe nada para traz e que confira sempre 2 vezes para ter certeza que não esqueceu de nada. Eu preciso que revise tudo que foi feito com o pensamento de que tem erro, e preciso encontralo; No /code-review quero que siga as boas praticas de desenvolvimento na auditoria ( e deve especificar o que se trata o code review para identificação posterior), sempre confime pelo menos 2 vezes afim de ver se deixou algum bug ou code smell, e assim que terminar escreva um documento detalhado em @docs/code-review, pois não permito falhas, nem de lógica, nem de string (erro de portugues), nem performace muito menos segurança, para isso confime com o CVE bugs que possa ter, se encontrar algum erro, volte e concerte o erro e repita o processo. Se estiver tudo completamente implementado, validado e testado, quero que mova somente os cards revisados card para Done no fenix
@@ -20,17 +15,13 @@ Quero que não deixe nada para traz e que confira sempre 2 vezes para ter certez
 
 busque os seguintes cards no fenix knowladge e os implemente:
 
-* FIAP-0067 [Story] — S5.2 — Componentes de Domínio: TaskCard, Header e FilterBar -- backlog
-       * FIAP-0069 [Task] — Criar Header.tsx em components/ -- backlog
-       * FIAP-0070 [Task] — Criar TaskCard.tsx em components/ -- backlog
-       * FIAP-0071 [Task] — Criar FilterBar.tsx em components/ -- backlog
-   * FIAP-0068 [Story] — S5.3 — Telas do Aplicativo -- backlog
-       * FIAP-0072 [Task] — Implementar TaskListScreen — FlatList, FilterBar, EmptyState e navegação -- backlog
-       * FIAP-0073 [Task] — Implementar controle de acesso por role em todas as screens -- backlog
-       * FIAP-0074 [Task] — Implementar TaskListScreen e TaskDetailScreen — integração e navegação -- backlog
-       * FIAP-0076 [Task] — Adicionar navegação da HomeScreen para aba de Tarefas -- backlog
-       * FIAP-0077 [Task] — Feedback visual ao salvar e editar tarefa — Alert de sucesso -- backlog
-       * FIAP-0080 [Task] — [DIFERENCIAL] Implementar RefreshControl e skeleton loading -- backlog
+* FIAP-0016 [Story] — S6.1 — API Externa: Frases Motivacionais e Categorias -- backlog
+       * FIAP-0039 [Task] — Criar services/api.ts — fetchCategories e fetchMotivationalQuote -- backlog
+       * FIAP-0040 [Task] — Implementar consumo de frases motivacionais na HomeScreen -- backlog
+       * FIAP-0075 [Task] — Integrar fetchCategories na TaskFormScreen -- To Do
+   * FIAP-0017 [Story] — S6.2 — ThemeContext e Dark/Light Mode -- backlog
+       * FIAP-0041 [Task] — Implementar ThemeContext e hook useTheme com persistência -- backlog
+       * FIAP-0042 [Task] — Aplicar alternância de tema na SettingsScreen e componentes -- backlog
 ----
 Quero que não deixe nada para traz e que confira sempre 2 vezes para ter certeza que não esqueceu de nada. Eu preciso que quando estiver implementando siga as boas praticas de desenvolvimentom documente o que fez, sempre confime se deixou algum bug ou code smell, e assim que terminar de criar ou editar uma pagina, realize um code review, pois não permito falhas, nem de lógica, nem performace muito menos segurança, para isso confime com o CVE bugs que possa ter, se encontrar algum erro, volte e concerte o erro. E depois que não tiver nenhum erro, preciso que crie testes unitarios para testar o fluxo e testar o código estressando ele para verificar se está resiliente e sem nenhum tipo de falha, se encontrar algum problema durante os testes, crie um plano e resolva.
 Caso o código esteja 100% testado e validado, e que não aponte nenhum erro dutante os teste e nem o estresse, quero que mova os cards feitos ou alterados/ para Code Review no fenix
@@ -117,17 +108,17 @@ exemplo:
        * FIAP-0060 [Task] — Implementar TaskDetailScreen — exibição completa + botões admin -- backlog -- 100% feito
        * FIAP-0061 [Task] — Implementar SettingsScreen — tema, perfil e tratamento -- backlog -- 100% feito
        * FIAP-0079 [Task] — [DIFERENCIAL] Implementar animações de transição -- backlog -- 100% feito
-   * FIAP-0067 [Story] — S5.2 — Componentes de Domínio: TaskCard, Header e FilterBar -- backlog
-       * FIAP-0069 [Task] — Criar Header.tsx em components/ -- backlog
-       * FIAP-0070 [Task] — Criar TaskCard.tsx em components/ -- backlog
-       * FIAP-0071 [Task] — Criar FilterBar.tsx em components/ -- backlog
-   * FIAP-0068 [Story] — S5.3 — Telas do Aplicativo -- backlog
-       * FIAP-0072 [Task] — Implementar TaskListScreen — FlatList, FilterBar, EmptyState e navegação -- backlog
-       * FIAP-0073 [Task] — Implementar controle de acesso por role em todas as screens -- backlog
-       * FIAP-0074 [Task] — Implementar TaskListScreen e TaskDetailScreen — integração e navegação -- backlog
-       * FIAP-0076 [Task] — Adicionar navegação da HomeScreen para aba de Tarefas -- backlog
-       * FIAP-0077 [Task] — Feedback visual ao salvar e editar tarefa — Alert de sucesso -- backlog
-       * FIAP-0080 [Task] — [DIFERENCIAL] Implementar RefreshControl e skeleton loading -- backlog
+   * FIAP-0067 [Story] — S5.2 — Componentes de Domínio: TaskCard, Header e FilterBar -- backlog -- 100% feito
+       * FIAP-0069 [Task] — Criar Header.tsx em components/ -- backlog -- 100% feito
+       * FIAP-0070 [Task] — Criar TaskCard.tsx em components/ -- backlog -- 100% feito
+       * FIAP-0071 [Task] — Criar FilterBar.tsx em components/ -- backlog -- 100% feito
+   * FIAP-0068 [Story] — S5.3 — Telas do Aplicativo -- backlog -- 100% feito
+       * FIAP-0072 [Task] — Implementar TaskListScreen — FlatList, FilterBar, EmptyState e navegação -- backlog -- 100% feito
+       * FIAP-0073 [Task] — Implementar controle de acesso por role em todas as screens -- backlog -- 100% feito
+       * FIAP-0074 [Task] — Implementar TaskListScreen e TaskDetailScreen — integração e navegação -- backlog -- 100% feito
+       * FIAP-0076 [Task] — Adicionar navegação da HomeScreen para aba de Tarefas -- backlog -- 100% feito
+       * FIAP-0077 [Task] — Feedback visual ao salvar e editar tarefa — Alert de sucesso -- backlog -- 100% feito
+       * FIAP-0080 [Task] — [DIFERENCIAL] Implementar RefreshControl e skeleton loading -- backlog -- 100% feito
 
 
 * FIAP-0009 — F6 — Persistência Local e API Externa -- backlog

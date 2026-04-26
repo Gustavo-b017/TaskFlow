@@ -40,3 +40,8 @@ jest.mock('./src/hooks/useTheme', () => ({
 jest.mock('./src/hooks/useTreatment', () => ({
   useTreatment: () => ({ treatment: 'Sr.', updateTreatment: jest.fn(), loading: false })
 }));
+
+
+jest.mock('@react-native-async-storage/async-storage', () => (
+  require('@react-native-async-storage/async-storage/jest/async-storage-mock')
+));

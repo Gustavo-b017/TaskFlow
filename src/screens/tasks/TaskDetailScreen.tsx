@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Alert, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -44,18 +44,37 @@ export function TaskDetailScreen() {
     );
   }
 
-  function handleDelete() {
+  async function handleDelete() {
+    const message = 'Tem certeza que deseja excluir esta tarefa?';
+
+    if (Platform.OS === 'web') {
+      const confirmed = window.confirm(message);
+      if (confirmed) {
+        try {
+          await removeTask(task!.id);
+          navigation.goBack();
+        } catch {
+          Alert.alert('Erro', 'Não foi possível excluir a tarefa.');
+        }
+      }
+      return;
+    }
+
     Alert.alert(
       'Excluir tarefa',
-      'Tem certeza que deseja excluir esta tarefa?',
+      message,
       [
         { text: 'Cancelar', style: 'cancel' },
         {
           text: 'Excluir',
           style: 'destructive',
           onPress: async () => {
-            await removeTask(task!.id);
-            navigation.goBack();
+            try {
+              await removeTask(task!.id);
+              navigation.goBack();
+            } catch {
+              Alert.alert('Erro', 'Não foi possível excluir a tarefa.');
+            }
           },
         },
       ]

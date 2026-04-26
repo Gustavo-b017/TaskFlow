@@ -1,17 +1,29 @@
+export const BASE_URL = 'https://dummyjson.com';
+
+// Categorias de tarefas — usadas no TaskFormScreen
+export async function fetchCategories(): Promise<string[]> {
+  const response = await fetch(`${BASE_URL}/products/categories`);
+  if (!response.ok) {
+    throw new Error(`Falha ao buscar categorias: ${response.status}`);
+  }
+  const data: unknown = await response.json();
+  
+  // DummyJSON retorna array de objetos ou strings dependendo da versão
+  if (Array.isArray(data)) {
+    return data.map((item) =>
+      typeof item === 'string' ? item : (item as { name: string }).name
+    );
+  }
+  throw new Error('Formato de resposta inesperado');
+}
+
+// Frase motivacional do dia — usada na HomeScreen
 export async function fetchMotivationalQuote(): Promise<string> {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      if (Math.random() > 0.9) {
-        reject(new Error('Falha na rede'));
-      } else {
-        const quotes = [
-          'A persistência realiza o impossível.',
-          'O sucesso é a soma de pequenos esforços repetidos dia após dia.',
-          'Seja a mudança que você deseja ver no mundo.',
-          'Acredite que você pode e você já estará no meio do caminho.'
-        ];
-        resolve(quotes[Math.floor(Math.random() * quotes.length)]);
-      }
-    }, 1000);
-  });
+  // Usando DummyJSON Quotes para maior confiabilidade
+  const response = await fetch(`${BASE_URL}/quotes/random`);
+  if (!response.ok) {
+    throw new Error('Falha ao buscar frase motivacional');
+  }
+  const data = (await response.json()) as { quote: string };
+  return data.quote;
 }
