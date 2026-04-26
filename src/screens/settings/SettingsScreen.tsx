@@ -1,127 +1,98 @@
-import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, Switch, StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useAuth } from '../../hooks/useAuth';
+import { useTheme } from '../../hooks/useTheme';
+import { CustomButton } from '../../shared/components/CustomButton';
 import { useTreatment } from '../../hooks/useTreatment';
-import { Treatment } from '../../services/treatmentService';
-import { Header } from '../../components/Header';
 
 export default function SettingsScreen() {
-  const { treatment, updateTreatment, loading } = useTreatment();
+  const { user, signOut } = useAuth();
+  const { theme, toggleTheme } = useTheme();
+  const { treatment, updateTreatment } = useTreatment();
+  
+  // Using local state for local UI update and global via useTreatment
+  const [localTreatment, setLocalTreatment] = useState<'Sr.' | 'Sra.' | 'Srta.'>('Sr.');
 
-  const options: Treatment[] = ['Sr.', 'Sra.', 'Srta.'];
+  useEffect(() => {
+    if (treatment === 'Sr.' || treatment === 'Sra.' || treatment === 'Srta.') {
+      setLocalTreatment(treatment);
+    }
+  }, [treatment]);
 
-  if (loading) {
-    return (
-      <SafeAreaView style={styles.container}>
-        <Header />
-        <View style={styles.center}>
-          <Text>Carregando configurações...</Text>
-        </View>
-      </SafeAreaView>
-    );
+  async function handleTreatmentChange(value: 'Sr.' | 'Sra.' | 'Srta.') {
+    setLocalTreatment(value);
+    await updateTreatment(value);
   }
 
+  const styles = createStyles(theme);
+
   return (
-    <SafeAreaView style={styles.container}>
-      <Header />
+    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
       <View style={styles.content}>
-        <Text style={styles.title}>Configurações</Text>
-        
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Preferência de Tratamento</Text>
-          <View style={styles.optionsContainer}>
-            {options.map((option) => (
-              <TouchableOpacity
-                key={option}
-                style={[
-                  styles.optionButton,
-                  treatment === option && styles.optionSelected
-                ]}
-                onPress={() => updateTreatment(option)}
-              >
-                <Text style={[
-                  styles.optionText,
-                  treatment === option && styles.optionTextSelected
-                ]}>
-                  {option}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-          <Text style={styles.helperText}>
-            Esta preferência será exibida nas saudações do aplicativo.
-          </Text>
+        {/* Seção: Perfil */}
+        <Text style={styles.sectionTitle}>Perfil</Text>
+        <View style={styles.card}>
+          <Text style={styles.profileName}>{user?.name}</Text>
+          <Text style={styles.profileRole}>{user?.role === 'admin' ? 'Administrador' : 'Usuário'}</Text>
+        </View>
+
+        {/* Seção: Preferência de tratamento */}
+        <Text style={styles.sectionTitle}>Tratamento</Text>
+        <View style={styles.treatmentRow}>
+          {(['Sr.', 'Sra.', 'Srta.'] as const).map((option) => (
+            <View key={option} style={{ flex: 1, paddingHorizontal: 4 }}>
+              <CustomButton
+                title={option}
+                onPress={() => handleTreatmentChange(option)}
+                variant={localTreatment === option ? 'primary' : 'secondary'}
+              />
+            </View>
+          ))}
+        </View>
+
+        {/* Seção: Tema */}
+        <Text style={styles.sectionTitle}>Tema</Text>
+        <View style={[styles.card, styles.themeRow]}>
+          <Text style={styles.themeLabel}>{theme === 'dark' ? 'Escuro' : 'Claro'}</Text>
+          <Switch
+            value={theme === 'dark'}
+            onValueChange={toggleTheme}
+            trackColor={{ true: '#3B82F6', false: '#E5E7EB' }}
+          />
+        </View>
+
+        {/* Logout */}
+        <View style={styles.footer}>
+          <CustomButton title="Sair" onPress={signOut} variant="danger" />
         </View>
       </View>
     </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F2F2F7',
-  },
-  center: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  content: {
-    flex: 1,
-    padding: 20,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#333333',
-    marginBottom: 24,
-  },
-  section: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    padding: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
-  },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333333',
-    marginBottom: 16,
-  },
-  optionsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  optionButton: {
-    flex: 1,
-    height: 48,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#E5E5EA',
-    marginHorizontal: 4,
-  },
-  optionSelected: {
-    backgroundColor: '#007AFF',
-    borderColor: '#007AFF',
-  },
-  optionText: {
-    fontSize: 16,
-    color: '#333333',
-    fontWeight: '500',
-  },
-  optionTextSelected: {
-    color: '#FFFFFF',
-  },
-  helperText: {
-    fontSize: 12,
-    color: '#8E8E93',
-    marginTop: 12,
-    textAlign: 'center',
-  },
-});
+function createStyles(theme: 'light' | 'dark') {
+  const isDark = theme === 'dark';
+  return StyleSheet.create({
+    container: { flex: 1, backgroundColor: isDark ? '#121212' : '#F2F2F7' },
+    content: { flex: 1, padding: 24 },
+    sectionTitle: {
+      fontSize: 18,
+      fontWeight: '600',
+      color: isDark ? '#E5E5EA' : '#3A3A3C',
+      marginTop: 24,
+      marginBottom: 12,
+    },
+    card: {
+      backgroundColor: isDark ? '#1F2937' : '#FFFFFF',
+      padding: 16,
+      borderRadius: 12,
+    },
+    profileName: { fontSize: 18, fontWeight: 'bold', color: isDark ? '#F9FAFB' : '#1C1C1E', marginBottom: 4 },
+    profileRole: { fontSize: 14, color: isDark ? '#9CA3AF' : '#8E8E93' },
+    treatmentRow: { flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: -4 },
+    themeRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+    themeLabel: { fontSize: 16, color: isDark ? '#F9FAFB' : '#1C1C1E' },
+    footer: { marginTop: 'auto', paddingTop: 24 },
+  });
+}

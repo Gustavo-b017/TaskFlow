@@ -1,68 +1,76 @@
 import React from 'react';
-import { 
-  View, 
-  Text, 
-  TextInput, 
-  StyleSheet, 
-  TextInputProps 
-} from 'react-native';
+import { View, Text, TextInput, StyleSheet } from 'react-native';
+import { useTheme } from '../../hooks/useTheme';
 
-interface CustomInputProps extends TextInputProps {
+interface CustomInputProps {
   label: string;
-  error?: string | null;
+  value: string;
+  onChangeText: (value: string) => void;
+  error?: string;
+  secureTextEntry?: boolean;
+  placeholder?: string;
+  multiline?: boolean;
+  editable?: boolean;
+  testID?: string;
 }
 
-export function CustomInput({ 
-  label, 
-  error, 
-  style, 
-  ...rest 
+export function CustomInput({
+  label,
+  value,
+  onChangeText,
+  error,
+  secureTextEntry = false,
+  placeholder,
+  multiline = false,
+  editable = true,
+  testID,
 }: CustomInputProps) {
+  const { theme } = useTheme();
+  const styles = createStyles(theme, !!error);
+
   return (
     <View style={styles.container}>
       <Text style={styles.label}>{label}</Text>
       <TextInput
-        style={[
-          styles.input,
-          error ? styles.inputError : null,
-          style
-        ]}
-        placeholderTextColor="#999999"
-        {...rest}
+        style={styles.input}
+        value={value}
+        onChangeText={onChangeText}
+        secureTextEntry={secureTextEntry}
+        placeholder={placeholder}
+        placeholderTextColor={theme === 'dark' ? '#6B7280' : '#9CA3AF'}
+        multiline={multiline}
+        editable={editable}
+        autoCapitalize="none"
+        testID={testID}
       />
       {error && <Text style={styles.errorText}>{error}</Text>}
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    width: '100%',
-    marginVertical: 8,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#333333',
-    marginBottom: 4,
-  },
-  input: {
-    width: '100%',
-    height: 50,
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: '#CCCCCC',
-    borderRadius: 8,
-    paddingHorizontal: 16,
-    fontSize: 16,
-    color: '#333333',
-  },
-  inputError: {
-    borderColor: '#FF3B30',
-  },
-  errorText: {
-    fontSize: 12,
-    color: '#FF3B30',
-    marginTop: 4,
-  },
-});
+function createStyles(theme: 'light' | 'dark', hasError: boolean) {
+  return StyleSheet.create({
+    container: { marginBottom: 16 },
+    label: {
+      fontSize: 14,
+      fontWeight: '500',
+      color: theme === 'dark' ? '#F9FAFB' : '#111827',
+      marginBottom: 4,
+    },
+    input: {
+      borderWidth: 1,
+      borderColor: hasError ? '#EF4444' : (theme === 'dark' ? '#374151' : '#E5E7EB'),
+      borderRadius: 8,
+      paddingHorizontal: 12,
+      paddingVertical: 10,
+      minHeight: 44,
+      color: theme === 'dark' ? '#F9FAFB' : '#111827',
+      backgroundColor: theme === 'dark' ? '#1F2937' : '#FFFFFF',
+    },
+    errorText: {
+      color: '#EF4444',
+      fontSize: 12,
+      marginTop: 4,
+    },
+  });
+}

@@ -32,3 +32,11 @@ globalsToEagerLoad.forEach((name) => {
     // Ignorar se o módulo não estiver disponível no ambiente de teste
   }
 });
+
+jest.mock('./src/hooks/useTheme', () => ({
+  useTheme: () => ({ theme: 'light', toggleTheme: jest.fn() })
+}));
+
+jest.mock('./src/hooks/useTreatment', () => ({
+  useTreatment: () => ({ treatment: 'Sr.', updateTreatment: jest.fn(), loading: false })
+}));

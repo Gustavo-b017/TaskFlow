@@ -1,84 +1,60 @@
 import React from 'react';
-import { 
-  TouchableOpacity, 
-  Text, 
-  StyleSheet, 
-  ActivityIndicator, 
-  TouchableOpacityProps 
-} from 'react-native';
+import { TouchableOpacity, Text, ActivityIndicator, StyleSheet } from 'react-native';
+import { useTheme } from '../../hooks/useTheme';
 
-interface CustomButtonProps extends TouchableOpacityProps {
-  label: string;
-  type?: 'primary' | 'outline';
+interface CustomButtonProps {
+  title: string;
+  onPress: () => void;
   loading?: boolean;
+  disabled?: boolean;
+  variant?: 'primary' | 'danger' | 'secondary';
+  testID?: string;
 }
 
-export function CustomButton({ 
-  label, 
-  onPress, 
-  type = 'primary', 
-  loading = false, 
-  disabled,
-  style,
-  ...rest 
+export function CustomButton({
+  title,
+  onPress,
+  loading = false,
+  disabled = false,
+  variant = 'primary',
+  testID,
 }: CustomButtonProps) {
-  const isPrimary = type === 'primary';
+  const { theme } = useTheme();
+  const styles = createStyles(theme, variant, disabled);
 
   return (
-    <TouchableOpacity 
-      onPress={onPress} 
+    <TouchableOpacity
+      style={styles.button}
+      onPress={onPress}
       disabled={disabled || loading}
       activeOpacity={0.7}
-      style={[
-        styles.container, 
-        isPrimary ? styles.primaryContainer : styles.outlineContainer,
-        (disabled || loading) && styles.disabled,
-        style
-      ]}
-      {...rest}
+      testID={testID}
     >
-      {loading ? (
-        <ActivityIndicator color={isPrimary ? '#FFFFFF' : '#007AFF'} />
-      ) : (
-        <Text style={[
-          styles.label, 
-          isPrimary ? styles.primaryLabel : styles.outlineLabel
-        ]}>
-          {label}
-        </Text>
-      )}
+      {loading
+        ? <ActivityIndicator color="#FFFFFF" />
+        : <Text style={styles.text}>{title}</Text>
+      }
     </TouchableOpacity>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    width: '100%',
-    height: 56,
-    borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginVertical: 8,
-  },
-  primaryContainer: {
-    backgroundColor: '#007AFF',
-  },
-  outlineContainer: {
-    backgroundColor: 'transparent',
-    borderWidth: 1,
-    borderColor: '#007AFF',
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  primaryLabel: {
-    color: '#FFFFFF',
-  },
-  outlineLabel: {
-    color: '#007AFF',
-  },
-  disabled: {
-    opacity: 0.5,
-  },
-});
+function createStyles(theme: 'light' | 'dark', variant: string, disabled: boolean) {
+  return StyleSheet.create({
+    button: {
+      minHeight: 44,           // toque mínimo de 44dp
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+      borderRadius: 8,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: variant === 'danger' ? '#EF4444' : variant === 'secondary' ? (theme === 'dark' ? '#374151' : '#E5E7EB') : '#3B82F6',
+      opacity: disabled ? 0.5 : 1,
+      marginVertical: 8,
+    },
+    text: {
+      color: variant === 'secondary' ? (theme === 'dark' ? '#FFFFFF' : '#000000') : '#FFFFFF',
+      fontSize: 16,
+      fontWeight: '600',
+    },
+  });
+}
