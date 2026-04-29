@@ -16,6 +16,12 @@ Aplicativo mobile de gerenciamento de tarefas pessoais, desenvolvido com React N
 
 ---
 
+## Video de demonstração
+
+https://www.youtube.com/watch?v=uQgz-44HylE
+
+---
+
 ## Como iniciar
 
 ### Pré-requisitos
