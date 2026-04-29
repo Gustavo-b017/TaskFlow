@@ -347,7 +347,7 @@ function createStyles(theme: 'light' | 'dark') {
   const themeColors = COLORS[theme];
   return StyleSheet.create({
     container: { flex: 1, backgroundColor: themeColors.background },
-    content: { padding: SPACING.lg, paddingBottom: 60 },
+    content: { padding: SPACING.lg, paddingBottom: 140 },
     pageTitle: {
       fontSize: 28,
       fontWeight: '800',
