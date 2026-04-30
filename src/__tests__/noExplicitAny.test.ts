@@ -11,10 +11,11 @@ function walk(dir: string): string[] {
 }
 
 describe('no explicit any in source', () => {
-  it('does not contain explicit any in src files', () => {
+  it('does not contain explicit any in src files or test files', () => {
+    const self = path.resolve(__filename);
     const files = walk(path.join(process.cwd(), 'src')).filter(
       (filePath) =>
-        !filePath.includes(`${path.sep}__tests__${path.sep}`) &&
+        path.resolve(filePath) !== self &&
         !filePath.endsWith('.d.ts')
     );
 
