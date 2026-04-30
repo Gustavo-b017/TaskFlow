@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Alert, Platform, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import * as LucideIcons from 'lucide-react-native';
@@ -8,6 +8,7 @@ import type { RouteProp } from '@react-navigation/native';
 import type { TaskStackParamList } from '../../types/navigation';
 import type { TaskPriority, TaskStatus } from '../../types/task';
 import { CustomButton } from '../../shared/components/CustomButton';
+import { DeleteConfirmModal } from '../../components/DeleteConfirmModal';
 import { StatusBadge } from '../../shared/components/StatusBadge';
 import { useAuth } from '../../hooks/useAuth';
 import { useTasks } from '../../hooks/useTasks';
@@ -40,6 +41,7 @@ export function TaskDetailScreen() {
   const themeColors = COLORS[theme];
   const isAdmin = user?.role === 'admin';
   const [updatingStatus, setUpdatingStatus] = useState(false);
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
 
   const { taskId } = route.params;
   const task = tasks.find((t) => t.id === taskId);
@@ -59,37 +61,8 @@ export function TaskDetailScreen() {
   const currentTask = task;
   const IconComponent = resolveLucideIcon(currentTask.categoryIcon);
 
-  async function handleDelete() {
-    const message = 'Tem certeza que deseja excluir esta tarefa?';
-
-    if (Platform.OS === 'web') {
-      const confirmed = window.confirm(message);
-      if (confirmed) {
-        try {
-          await removeTask(currentTask.id);
-          navigation.goBack();
-        } catch {
-          Alert.alert('Erro', 'Nao foi possivel excluir a tarefa.');
-        }
-      }
-      return;
-    }
-
-    Alert.alert('Excluir tarefa', message, [
-      { text: 'Cancelar', style: 'cancel' },
-      {
-        text: 'Excluir',
-        style: 'destructive',
-        onPress: async () => {
-          try {
-            await removeTask(currentTask.id);
-            navigation.goBack();
-          } catch {
-            Alert.alert('Erro', 'Nao foi possivel excluir a tarefa.');
-          }
-        },
-      },
-    ]);
+  function handleDelete() {
+    setDeleteModalVisible(true);
   }
 
   function handleEdit() {
@@ -209,6 +182,21 @@ export function TaskDetailScreen() {
           </View>
         )}
       </ScrollView>
+
+      <DeleteConfirmModal
+        visible={deleteModalVisible}
+        taskName={currentTask.title}
+        onConfirm={async () => {
+          setDeleteModalVisible(false);
+          try {
+            await removeTask(currentTask.id);
+            navigation.goBack();
+          } catch {
+            Alert.alert('Erro', 'Não foi possível excluir a tarefa.');
+          }
+        }}
+        onCancel={() => setDeleteModalVisible(false)}
+      />
     </SafeAreaView>
   );
 }
