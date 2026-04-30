@@ -1,7 +1,9 @@
 import { performance } from 'perf_hooks';
 
+type MockUser = { role: string; name: string };
+
 // Simula a árvore de componentes minimalista do React Navigation
-function MockRootNavigator(user: any, loading: boolean) {
+function MockRootNavigator(user: MockUser | null, loading: boolean) {
   if (loading) {
     return 'Spinner';
   }

@@ -54,7 +54,8 @@ async function runTests() {
   await AsyncStorage.setItem('@taskflow:user', JSON.stringify({ id: 1, username: 'admin', password: '123' }));
   const data = await AsyncStorage.getItem('@taskflow:user');
   // Aqui testamos se a nossa lógica real no AuthContext.tsx previne isso (o teste apenas simula a sanitização)
-  const sanitized = (d: any) => { const { password, ...rest } = d; return rest; };
+  type RawUser = { id: number; username: string; password: string; role: string; name: string };
+  const sanitized = (d: RawUser): Omit<RawUser, 'password'> => { const { password: _pw, ...rest } = d; return rest; };
   const rawData = JSON.parse(data!);
   const safeData = sanitized(rawData);
   if (safeData.password) {

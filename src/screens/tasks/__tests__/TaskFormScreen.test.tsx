@@ -161,7 +161,10 @@ describe('TaskFormScreen — modo edição', () => {
       fireEvent.press(getByTestId('btn-submit'));
     });
 
-    expect(mockUpdateTask).toHaveBeenCalledWith('task-edit-1', expect.any(Object));
+    expect(mockUpdateTask).toHaveBeenCalledWith(
+      'task-edit-1',
+      expect.objectContaining({ title: 'Tarefa existente' })
+    );
     expect(mockAddTask).not.toHaveBeenCalled();
   });
 });
