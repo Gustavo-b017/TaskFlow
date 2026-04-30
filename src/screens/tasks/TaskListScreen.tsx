@@ -14,6 +14,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { TaskStackParamList } from '../../types/navigation';
 import type { Task } from '../../types/task';
 import { Header } from '../../components/Header';
+import { SearchBar } from '../../components/SearchBar';
 import { TaskCard } from '../../components/TaskCard';
 import { FilterBar, type FilterOption } from '../../components/FilterBar';
 import { TaskSkeleton } from '../../components/TaskSkeleton';
@@ -103,11 +104,12 @@ export default function TaskListScreen() {
           userName={user?.name ?? ''}
           role={user?.role ?? 'user'}
           title="Minhas Tarefas"
-          showSearch
-          searchValue={searchQuery}
-          onSearchChange={setSearchQuery}
-          onClearSearch={clearSearch}
-          searchPlaceholder="Pesquisar tarefa"
+        />
+        <SearchBar
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          onClear={clearSearch}
+          placeholder="Pesquisar tarefa"
         />
         <View style={{ marginTop: 16 }}>
           {[1, 2, 3, 4].map((i) => <TaskSkeleton key={i} theme={theme} />)}
@@ -118,15 +120,16 @@ export default function TaskListScreen() {
 
   return (
     <SafeAreaView style={listStyles.container} edges={['top', 'left', 'right']}>
-      <Header 
-        userName={user?.name ?? ''} 
-        role={user?.role ?? 'user'} 
+      <Header
+        userName={user?.name ?? ''}
+        role={user?.role ?? 'user'}
         title="Minhas Tarefas"
-        showSearch
-        searchValue={searchQuery}
-        onSearchChange={setSearchQuery}
-        onClearSearch={clearSearch}
-        searchPlaceholder="Pesquisar tarefa"
+      />
+      <SearchBar
+        value={searchQuery}
+        onChangeText={setSearchQuery}
+        onClear={clearSearch}
+        placeholder="Pesquisar tarefa"
       />
 
       <View style={listStyles.insightsRow}>

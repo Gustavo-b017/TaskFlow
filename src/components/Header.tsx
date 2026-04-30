@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import * as LucideIcons from 'lucide-react-native';
 import { useTheme } from '../hooks/useTheme';
 import { useTreatment } from '../hooks/useTreatment';
@@ -11,11 +11,6 @@ interface HeaderProps {
   role: UserRole;
   onLogout?: () => void;
   title?: string;
-  showSearch?: boolean;
-  searchValue?: string;
-  onSearchChange?: (value: string) => void;
-  onClearSearch?: () => void;
-  searchPlaceholder?: string;
 }
 
 export function Header({
@@ -23,16 +18,10 @@ export function Header({
   role,
   onLogout,
   title,
-  showSearch = false,
-  searchValue = '',
-  onSearchChange,
-  onClearSearch,
-  searchPlaceholder = 'Pesquisar',
 }: HeaderProps) {
   const { theme } = useTheme();
   const { treatment } = useTreatment();
   const styles = createStyles(theme);
-  const themeColors = COLORS[theme];
 
   const avatarChar = userName && userName.length > 0 ? userName.charAt(0).toUpperCase() : 'U';
   const displayName = treatment ? `${treatment} ${userName}` : userName;
@@ -57,40 +46,15 @@ export function Header({
             </>
           )}
         </View>
-        {showSearch ? (
-          <View style={styles.searchWrap}>
-            <LucideIcons.Search size={16} color={themeColors.textMuted} />
-            <TextInput
-              value={searchValue}
-              onChangeText={onSearchChange}
-              placeholder={searchPlaceholder}
-              placeholderTextColor={themeColors.textMuted}
-              style={styles.searchInput}
-              returnKeyType="search"
-              accessibilityLabel="Campo de pesquisa"
-            />
-            {searchValue.length > 0 && (
-              <TouchableOpacity
-                onPress={onClearSearch}
-                style={styles.clearSearchBtn}
-                activeOpacity={0.8}
-                accessibilityRole="button"
-                accessibilityLabel="Limpar pesquisa"
-              >
-                <LucideIcons.X size={14} color={themeColors.textMuted} />
-              </TouchableOpacity>
-            )}
-          </View>
-        ) : (
+        {onLogout && (
           <TouchableOpacity
             onPress={onLogout}
             style={styles.logoutBtn}
             activeOpacity={0.7}
-            disabled={!onLogout}
             accessibilityRole="button"
             accessibilityLabel="Sair da conta"
           >
-            <LucideIcons.LogOut size={20} color={themeColors.error} strokeWidth={2.5} />
+            <LucideIcons.LogOut size={20} color={COLORS[theme].error} strokeWidth={2.5} />
           </TouchableOpacity>
         )}
       </View>
@@ -163,32 +127,6 @@ function createStyles(theme: 'light' | 'dark') {
       alignItems: 'center',
       borderRadius: 12,
       backgroundColor: theme === 'dark' ? '#EF444415' : '#FEE2E2',
-    },
-    searchWrap: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: 8,
-      minHeight: 44,
-      width: '56%',
-      borderRadius: 12,
-      borderWidth: 1,
-      borderColor: themeColors.border,
-      backgroundColor: themeColors.inputBg,
-      paddingHorizontal: 10,
-    },
-    searchInput: {
-      flex: 1,
-      color: themeColors.text,
-      fontSize: 14,
-      paddingVertical: 8,
-    },
-    clearSearchBtn: {
-      width: 24,
-      height: 24,
-      borderRadius: 12,
-      backgroundColor: themeColors.surface,
-      justifyContent: 'center',
-      alignItems: 'center',
     },
   });
 }
