@@ -1,3 +1,5 @@
+import type { NavigatorScreenParams } from '@react-navigation/native';
+
 export type TaskStackParamList = {
   TaskList: undefined;
   TaskForm: { taskId?: string };
@@ -14,7 +16,7 @@ export type SettingsStackParamList = {
 
 export type TabParamList = {
   Home: undefined;
-  Tasks: undefined;
+  Tasks: NavigatorScreenParams<TaskStackParamList>;
   Settings: undefined;
 };
 

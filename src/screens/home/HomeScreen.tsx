@@ -12,6 +12,7 @@ import { useNavigation } from '@react-navigation/native';
 import * as LucideIcons from 'lucide-react-native';
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import type { TabParamList } from '../../types/navigation';
+import type { Task } from '../../types/task';
 import { useAuth } from '../../hooks/useAuth';
 import { useTasks } from '../../hooks/useTasks';
 import { useTheme } from '../../hooks/useTheme';
@@ -22,6 +23,9 @@ import { BORDER_RADIUS, COLORS, SPACING } from '../../styles/theme';
 type HomeNav = BottomTabNavigationProp<TabParamList, 'Home'>;
 
 const QUOTE_MAX_LINES = 4;
+const PRIORITY_ORDER = { alta: 0, media: 1, baixa: 2 } as const;
+const PRIORITY_LABELS = { alta: 'Alta', media: 'Média', baixa: 'Baixa' } as const;
+const ACTIVE_TASKS_LIMIT = 3;
 
 export default function HomeScreen() {
   const navigation = useNavigation<HomeNav>();
@@ -34,6 +38,7 @@ export default function HomeScreen() {
   const [quote, setQuote] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<'pendente' | 'em_andamento'>('pendente');
 
   const pendingCount = useMemo(
     () => tasks.filter((task) => task.status !== 'concluida').length,
@@ -43,6 +48,24 @@ export default function HomeScreen() {
   const completedCount = useMemo(
     () => tasks.filter((task) => task.status === 'concluida').length,
     [tasks]
+  );
+
+  const pendingTabCount = useMemo(
+    () => tasks.filter((t) => t.status === 'pendente').length,
+    [tasks]
+  );
+
+  const inProgressTabCount = useMemo(
+    () => tasks.filter((t) => t.status === 'em_andamento').length,
+    [tasks]
+  );
+
+  const activeTasks = useMemo(
+    () =>
+      tasks
+        .filter((t) => t.status === activeTab)
+        .sort((a, b) => PRIORITY_ORDER[a.priority] - PRIORITY_ORDER[b.priority]),
+    [tasks, activeTab]
   );
 
   const firstName = user?.name?.trim().split(/\s+/)[0] || 'Usuario';
@@ -65,10 +88,23 @@ export default function HomeScreen() {
   }
 
   function goToTasks() {
-    navigation.navigate('Tasks');
+    navigation.navigate('Tasks', { screen: 'TaskList' });
   }
 
   const styles = createStyles(theme);
+
+  function getPriorityColor(priority: Task['priority']) {
+    if (priority === 'alta') return themeColors.error;
+    if (priority === 'media') return themeColors.accent;
+    return themeColors.success;
+  }
+
+  function navigateToTask(taskId: string) {
+    navigation.navigate('Tasks', {
+      screen: 'TaskDetail',
+      params: { taskId },
+    });
+  }
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
@@ -175,6 +211,91 @@ export default function HomeScreen() {
             <Text style={styles.actionDesc}>Preferencias e tema</Text>
           </TouchableOpacity>
         </View>
+
+        <View style={styles.activeTasksCard}>
+          <View style={styles.activeTasksHeader}>
+            <View style={styles.activeTitleRow}>
+              <View style={styles.activeTitleIcon}>
+                <LucideIcons.Zap size={13} color={themeColors.primary} strokeWidth={3} />
+              </View>
+              <Text style={styles.activeTasksTitle}>Tarefas Ativas</Text>
+              {!tasksLoading && activeTasks.length > 0 && (
+                <View style={styles.activeCountBadge}>
+                  <Text style={styles.activeCountText}>{activeTasks.length}</Text>
+                </View>
+              )}
+            </View>
+            <View style={styles.tabSwitcher}>
+              <TouchableOpacity
+                style={[styles.tabBtn, activeTab === 'pendente' && styles.tabBtnActive]}
+                onPress={() => setActiveTab('pendente')}
+                activeOpacity={0.7}
+              >
+                <Text style={[styles.tabBtnText, activeTab === 'pendente' && styles.tabBtnTextActive]}>
+                  Pendentes{pendingTabCount > 0 ? ` ${pendingTabCount}` : ''}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.tabBtn, activeTab === 'em_andamento' && styles.tabBtnActive]}
+                onPress={() => setActiveTab('em_andamento')}
+                activeOpacity={0.7}
+              >
+                <Text style={[styles.tabBtnText, activeTab === 'em_andamento' && styles.tabBtnTextActive]}>
+                  Andamento{inProgressTabCount > 0 ? ` ${inProgressTabCount}` : ''}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+          <View style={styles.activeTasksDivider} />
+
+          {tasksLoading && (
+            <View style={styles.miniLoadingContainer}>
+              <ActivityIndicator size="small" color={themeColors.primary} />
+            </View>
+          )}
+
+          {!tasksLoading && activeTasks.length === 0 && (
+            <View style={styles.miniEmptyContainer}>
+              <LucideIcons.CheckCircle2 size={20} color={themeColors.success} strokeWidth={2.5} />
+              <Text style={styles.miniEmptyText}>
+                {activeTab === 'pendente' ? 'Nenhuma tarefa pendente.' : 'Nenhuma em andamento.'}
+              </Text>
+            </View>
+          )}
+
+          {!tasksLoading && activeTasks.slice(0, ACTIVE_TASKS_LIMIT).map((task) => {
+            const pc = getPriorityColor(task.priority);
+            return (
+              <TouchableOpacity
+                key={task.id}
+                style={styles.miniCard}
+                onPress={() => navigateToTask(task.id)}
+                activeOpacity={0.6}
+                accessibilityRole="button"
+                accessibilityLabel={`Abrir tarefa ${task.title}`}
+              >
+                <View style={[styles.miniCardAccent, { backgroundColor: pc }]} />
+                <View style={styles.miniCardContent}>
+                  <Text style={styles.miniCardTitle} numberOfLines={1}>{task.title}</Text>
+                  <Text style={styles.miniCardCategory} numberOfLines={1}>{task.category}</Text>
+                </View>
+                <View style={[styles.miniPriorityPill, { borderColor: `${pc}55`, backgroundColor: `${pc}18` }]}>
+                  <Text style={[styles.miniPriorityText, { color: pc }]}>{PRIORITY_LABELS[task.priority]}</Text>
+                </View>
+                <LucideIcons.ChevronRight size={16} color={themeColors.textMuted} strokeWidth={2.5} />
+              </TouchableOpacity>
+            );
+          })}
+
+          {!tasksLoading && activeTasks.length > ACTIVE_TASKS_LIMIT && (
+            <TouchableOpacity style={styles.seeMoreBtn} onPress={goToTasks} activeOpacity={0.7}>
+              <Text style={styles.seeMoreText}>
+                Ver mais {activeTasks.length - ACTIVE_TASKS_LIMIT} tarefas
+              </Text>
+              <LucideIcons.ArrowRight size={14} color={themeColors.primary} strokeWidth={2.5} />
+            </TouchableOpacity>
+          )}
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -264,6 +385,172 @@ function createStyles(theme: 'light' | 'dark') {
       color: themeColors.text,
       marginTop: 1,
     },
+    actionsGrid: {
+      flexDirection: 'row',
+      gap: SPACING.md,
+      marginBottom: SPACING.md,
+    },
+    activeTasksCard: {
+      backgroundColor: themeColors.surface,
+      borderRadius: BORDER_RADIUS.lg,
+      padding: SPACING.md,
+      borderWidth: 1.5,
+      borderColor: theme === 'dark'
+        ? `${themeColors.primary}28`
+        : themeColors.border,
+      marginBottom: SPACING.md,
+      shadowColor: themeColors.primary,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: theme === 'dark' ? 0.08 : 0.04,
+      shadowRadius: 12,
+      elevation: 2,
+    },
+    activeTasksHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    },
+    activeTasksDivider: {
+      height: 1,
+      backgroundColor: themeColors.border,
+      marginTop: SPACING.sm,
+      marginBottom: SPACING.sm,
+      opacity: 0.6,
+    },
+    activeTitleRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+    },
+    activeTitleIcon: {
+      width: 26,
+      height: 26,
+      borderRadius: 8,
+      backgroundColor: theme === 'dark' ? `${themeColors.primary}25` : `${themeColors.primary}15`,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    activeTasksTitle: {
+      fontSize: 14,
+      fontWeight: '800',
+      color: themeColors.text,
+      letterSpacing: 0.2,
+    },
+    activeCountBadge: {
+      minWidth: 20,
+      height: 20,
+      borderRadius: 10,
+      backgroundColor: themeColors.primary,
+      justifyContent: 'center',
+      alignItems: 'center',
+      paddingHorizontal: 6,
+    },
+    activeCountText: {
+      fontSize: 11,
+      fontWeight: '800',
+      color: '#FFFFFF',
+    },
+    tabSwitcher: {
+      flexDirection: 'row',
+      backgroundColor: themeColors.inputBg,
+      borderRadius: BORDER_RADIUS.sm,
+      padding: 3,
+      gap: 2,
+    },
+    tabBtn: {
+      paddingHorizontal: 10,
+      paddingVertical: 5,
+      borderRadius: 6,
+    },
+    tabBtnActive: {
+      backgroundColor: themeColors.primary,
+    },
+    tabBtnText: {
+      fontSize: 11,
+      fontWeight: '700',
+      color: themeColors.textMuted,
+    },
+    tabBtnTextActive: {
+      color: '#FFFFFF',
+    },
+    miniLoadingContainer: {
+      minHeight: 52,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    miniEmptyContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingVertical: SPACING.md,
+      gap: 8,
+    },
+    miniEmptyText: {
+      fontSize: 13,
+      color: themeColors.textMuted,
+      fontWeight: '600',
+    },
+    miniCard: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: themeColors.inputBg,
+      borderRadius: BORDER_RADIUS.md,
+      borderWidth: 1,
+      borderColor: themeColors.border,
+      marginTop: SPACING.xs,
+      overflow: 'hidden',
+      paddingRight: SPACING.sm,
+      minHeight: 52,
+    },
+    miniCardAccent: {
+      width: 4,
+      alignSelf: 'stretch',
+      borderRadius: 2,
+      marginRight: SPACING.sm,
+    },
+    miniCardContent: {
+      flex: 1,
+      paddingVertical: SPACING.sm,
+    },
+    miniCardTitle: {
+      fontSize: 14,
+      fontWeight: '700',
+      color: themeColors.text,
+    },
+    miniCardCategory: {
+      fontSize: 11,
+      fontWeight: '600',
+      color: themeColors.textMuted,
+      textTransform: 'uppercase',
+      letterSpacing: 0.4,
+      marginTop: 2,
+    },
+    miniPriorityPill: {
+      borderRadius: BORDER_RADIUS.full,
+      borderWidth: 1,
+      paddingHorizontal: 8,
+      paddingVertical: 3,
+      marginRight: SPACING.xs,
+    },
+    miniPriorityText: {
+      fontSize: 10,
+      fontWeight: '800',
+      textTransform: 'uppercase',
+      letterSpacing: 0.3,
+    },
+    seeMoreBtn: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginTop: SPACING.sm,
+      paddingVertical: SPACING.xs,
+      gap: 6,
+    },
+    seeMoreText: {
+      fontSize: 13,
+      fontWeight: '700',
+      color: themeColors.primary,
+    },
     quoteCard: {
       backgroundColor: themeColors.surface,
       borderRadius: BORDER_RADIUS.lg,
@@ -330,10 +617,6 @@ function createStyles(theme: 'light' | 'dark') {
       color: themeColors.textMuted,
       fontWeight: '500',
       lineHeight: 20,
-    },
-    actionsGrid: {
-      flexDirection: 'row',
-      gap: SPACING.md,
     },
     actionCard: {
       flex: 1,
