@@ -1,23 +1,10 @@
-import { useState, useEffect } from 'react';
-import { Treatment, TreatmentService } from '../services/treatmentService';
+import { useContext } from 'react';
+import { TreatmentContext } from '../context/TreatmentContext';
 
 export function useTreatment() {
-  const [treatment, setTreatment] = useState<Treatment | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function load() {
-      const saved = await TreatmentService.getTreatment();
-      setTreatment(saved);
-      setLoading(false);
-    }
-    load();
-  }, []);
-
-  async function updateTreatment(value: Treatment) {
-    setTreatment(value);
-    await TreatmentService.setTreatment(value);
+  const context = useContext(TreatmentContext);
+  if (!context) {
+    throw new Error('useTreatment must be used within a TreatmentProvider');
   }
-
-  return { treatment, updateTreatment, loading };
+  return context;
 }

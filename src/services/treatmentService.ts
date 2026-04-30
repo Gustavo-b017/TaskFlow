@@ -1,29 +1,32 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { STORAGE_KEYS } from '../shared/constants/storageKeys';
 
 export type Treatment = 'Sr.' | 'Sra.' | 'Srta.';
 
 const VALID_TREATMENTS: Treatment[] = ['Sr.', 'Sra.', 'Srta.'];
 
+function storageKey(userId: number) {
+  return `@taskflow:treatment:${userId}`;
+}
+
 export const TreatmentService = {
-  async getTreatment(): Promise<Treatment | null> {
+  async getTreatment(userId: number): Promise<Treatment | null> {
     try {
-      const saved = await AsyncStorage.getItem(STORAGE_KEYS.TREATMENT);
+      const saved = await AsyncStorage.getItem(storageKey(userId));
       if (VALID_TREATMENTS.includes(saved as Treatment)) {
         return saved as Treatment;
       }
       return null;
-    } catch (e) {
+    } catch {
       return null;
     }
   },
 
-  async setTreatment(value: Treatment): Promise<void> {
+  async setTreatment(userId: number, value: Treatment): Promise<void> {
     if (!VALID_TREATMENTS.includes(value)) return;
     try {
-      await AsyncStorage.setItem(STORAGE_KEYS.TREATMENT, value);
-    } catch (e) {
-      // Falha silenciosa registrada em telemetria se necessário
+      await AsyncStorage.setItem(storageKey(userId), value);
+    } catch {
+      // silencioso
     }
-  }
+  },
 };
