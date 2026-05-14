@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import type { FieldOption } from '../../types/form';
 
@@ -12,8 +12,7 @@ type Props = {
 };
 
 export function RadioFieldInput({ label, options, value, error, required, onChange }: Props) {
-  // Bug fix: opções com value='' são tratadas como vazio na validação → filtra
-  const validOptions = options.filter((o) => o.value !== '');
+  const validOptions = useMemo(() => options.filter((o) => o.value !== ''), [options]);
 
   return (
     <View style={styles.container}>

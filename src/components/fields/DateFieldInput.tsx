@@ -11,7 +11,17 @@ type Props = {
 
 export function DateFieldInput({ label, value, error, required, onChange }: Props) {
   function handleChange(text: string) {
-    const digits = text.replace(/\D/g, '').slice(0, 8);
+    const isDeleting = text.length < value.length;
+    const rawDigits  = text.replace(/\D/g, '').slice(0, 8);
+
+    // When backspacing over a separator (e.g. "/"), the digit count
+    // stays the same — strip the last digit so the cursor moves back.
+    const currentDigits = value.replace(/\D/g, '');
+    const digits =
+      isDeleting && rawDigits === currentDigits
+        ? rawDigits.slice(0, -1)
+        : rawDigits;
+
     let formatted = digits;
     if (digits.length > 4) {
       formatted = `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4)}`;

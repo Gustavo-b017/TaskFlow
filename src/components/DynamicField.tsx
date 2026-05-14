@@ -102,5 +102,13 @@ export function DynamicField({ field, value, error, onChange }: Props) {
           onChange={(v) => onChange(id, v)}
         />
       );
+
+    default: {
+      // Compile-time exhaustiveness: TypeScript errors here if a union member has no case.
+      // Runtime path handles external JSON with unknown field types.
+      const _exhaustiveCheck: never = field;
+      void _exhaustiveCheck;
+      return null;
+    }
   }
 }
