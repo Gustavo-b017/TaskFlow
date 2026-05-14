@@ -8,9 +8,15 @@ export async function saveFormData(data: FormValues): Promise<void> {
 }
 
 export async function loadFormData(): Promise<FormValues | null> {
-  const json = await AsyncStorage.getItem(STORAGE_KEY);
-  if (!json) return null;
-  return JSON.parse(json) as FormValues;
+  try {
+    const json = await AsyncStorage.getItem(STORAGE_KEY);
+    if (!json) return null;
+    const parsed: unknown = JSON.parse(json);
+    if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) return null;
+    return parsed as FormValues;
+  } catch {
+    return null;
+  }
 }
 
 export async function clearFormData(): Promise<void> {
