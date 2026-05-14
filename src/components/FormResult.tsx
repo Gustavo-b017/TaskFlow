@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, StyleSheet } from 'react-native';
 import type { FormConfig, FormValues } from '../types/form';
 
 type Props = {
@@ -7,9 +7,11 @@ type Props = {
   data: FormValues;
   onEdit: () => void;
   onClear: () => void;
+  isSubmitting?: boolean;
+  storageError?: string | null;
 };
 
-export function FormResult({ config, data, onEdit, onClear }: Props) {
+export function FormResult({ config, data, onEdit, onClear, isSubmitting = false, storageError }: Props) {
   const rows = useMemo(
     () =>
       config.fields.map((field) => {
@@ -19,7 +21,7 @@ export function FormResult({ config, data, onEdit, onClear }: Props) {
         else if (raw === false) display = 'Não';
         else if (Array.isArray(raw)) display = raw.length > 0 ? raw.join(', ') : '—';
         else if (typeof raw === 'string' && raw.length > 0) display = raw;
-        return { label: field.label, display };
+        return { id: field.id, label: field.label, display };
       }),
     [config.fields, data],
   );
@@ -27,20 +29,41 @@ export function FormResult({ config, data, onEdit, onClear }: Props) {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Dados Salvos</Text>
+
+      {storageError ? (
+        <View style={styles.errorBanner}>
+          <Text style={styles.errorBannerText}>{storageError}</Text>
+        </View>
+      ) : null}
+
       <View style={styles.card}>
         {rows.map((row) => (
-          <View key={row.label} style={styles.row}>
+          <View key={row.id} style={styles.row}>
             <Text style={styles.rowLabel}>{row.label}</Text>
             <Text style={styles.rowValue}>{row.display}</Text>
           </View>
         ))}
       </View>
       <View style={styles.actions}>
-        <TouchableOpacity style={styles.btnEdit} onPress={onEdit} activeOpacity={0.8}>
+        <TouchableOpacity
+          style={styles.btnEdit}
+          onPress={onEdit}
+          activeOpacity={0.8}
+          disabled={isSubmitting}
+        >
           <Text style={styles.btnEditText}>Editar</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.btnClear} onPress={onClear} activeOpacity={0.8}>
-          <Text style={styles.btnClearText}>Limpar dados</Text>
+        <TouchableOpacity
+          style={[styles.btnClear, isSubmitting ? styles.btnDisabled : undefined]}
+          onPress={onClear}
+          activeOpacity={0.8}
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? (
+            <ActivityIndicator color="#ef4444" />
+          ) : (
+            <Text style={styles.btnClearText}>Limpar dados</Text>
+          )}
         </TouchableOpacity>
       </View>
     </ScrollView>
@@ -50,6 +73,15 @@ export function FormResult({ config, data, onEdit, onClear }: Props) {
 const styles = StyleSheet.create({
   container: { padding: 20, paddingBottom: 40 },
   title:     { fontSize: 22, fontWeight: '700', color: '#111', marginBottom: 20 },
+  errorBanner: {
+    backgroundColor: '#fef2f2',
+    borderWidth: 1,
+    borderColor: '#fecaca',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 16,
+  },
+  errorBannerText: { fontSize: 14, color: '#dc2626' },
   card: {
     backgroundColor: '#fff',
     borderRadius: 12,
@@ -83,5 +115,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ef4444',
   },
+  btnDisabled: { opacity: 0.5 },
   btnClearText: { color: '#ef4444', fontSize: 16, fontWeight: '600' },
 });

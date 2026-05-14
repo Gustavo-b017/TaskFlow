@@ -49,6 +49,8 @@ function FormContent({
     submitted,
     savedData,
     isValid,
+    isSubmitting,
+    storageError,
     setValue,
     handleSubmit,
     handleClear,
@@ -62,6 +64,8 @@ function FormContent({
         data={savedData}
         onEdit={handleEdit}
         onClear={handleClear}
+        isSubmitting={isSubmitting}
+        storageError={storageError}
       />
     );
   }
@@ -76,6 +80,12 @@ function FormContent({
       {configError ? (
         <View style={styles.warnBanner}>
           <Text style={styles.warnText}>{configError}</Text>
+        </View>
+      ) : null}
+
+      {storageError ? (
+        <View style={styles.errorBanner}>
+          <Text style={styles.errorBannerText}>{storageError}</Text>
         </View>
       ) : null}
 
@@ -98,11 +108,19 @@ function FormContent({
       ) : null}
 
       <TouchableOpacity
-        style={[styles.submitBtn, !isValid ? styles.submitBtnDisabled : undefined]}
+        style={[
+          styles.submitBtn,
+          (!isValid || isSubmitting) ? styles.submitBtnDisabled : undefined,
+        ]}
         onPress={handleSubmit}
+        disabled={isSubmitting}
         activeOpacity={0.8}
       >
-        <Text style={styles.submitBtnText}>Salvar cadastro</Text>
+        {isSubmitting ? (
+          <ActivityIndicator color="#fff" />
+        ) : (
+          <Text style={styles.submitBtnText}>Salvar cadastro</Text>
+        )}
       </TouchableOpacity>
     </ScrollView>
   );
