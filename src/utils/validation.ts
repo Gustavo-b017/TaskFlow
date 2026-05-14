@@ -6,9 +6,9 @@ export function validateForm(fields: FormField[], values: FormValues): FormError
   const errors: FormErrors = {};
 
   for (const field of fields) {
-    const value = values[field.id];
+    const value: FormValues[string] | undefined = values[field.id];
 
-    // Bug fix: options:[] + required → campo inviável → erro de config, não de usuário
+    // Config error: options array empty on a selection field → unresolvable required
     if (
       (field.type === 'radio' || field.type === 'select' || field.type === 'checkbox') &&
       field.options.length === 0
@@ -20,15 +20,13 @@ export function validateForm(fields: FormField[], values: FormValues): FormError
     }
 
     if (field.required) {
-      // Bug fix: switch required:true → value=false deve falhar (não apenas undefined)
       if (field.type === 'switch') {
+        // switch required:true → only true passes; false/undefined both fail
         if (value !== true) {
           errors[field.id] = `${field.label} é obrigatório`;
           continue;
         }
       } else {
-        // Bug fix: option.value='' → '' é tratado como vazio → bloqueado
-        // Para radio/select: required significa que um valor não-vazio deve estar selecionado
         const isEmpty =
           value === undefined ||
           value === null ||
@@ -41,6 +39,8 @@ export function validateForm(fields: FormField[], values: FormValues): FormError
         }
       }
     }
+
+    // --- Format validations (run even when not required, if a value is present) ---
 
     if (field.type === 'email' && typeof value === 'string' && value.length > 0) {
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
@@ -55,8 +55,43 @@ export function validateForm(fields: FormField[], values: FormValues): FormError
     }
 
     if (field.type === 'date' && typeof value === 'string' && value.length > 0) {
-      if (!/^\d{2}\/\d{2}\/\d{4}$/.test(value)) {
+      const dateRegex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
+      const match = dateRegex.exec(value);
+      if (!match) {
         errors[field.id] = 'Formato inválido (DD/MM/AAAA)';
+      } else {
+        const dayStr   = match[1];
+        const monthStr = match[2];
+        const yearStr  = match[3];
+        if (!dayStr || !monthStr || !yearStr) {
+          errors[field.id] = 'Formato inválido (DD/MM/AAAA)';
+        } else {
+          const day   = Number(dayStr);
+          const month = Number(monthStr);
+          const year  = Number(yearStr);
+          const d = new Date(year, month - 1, day);
+          const isCalendarValid =
+            d.getFullYear() === year  &&
+            d.getMonth()    === month - 1 &&
+            d.getDate()     === day;
+          if (!isCalendarValid) {
+            errors[field.id] = 'Data inválida';
+          }
+        }
+      }
+    }
+
+    // Defense-in-depth: radio/select value must be in current options.
+    // sanitizeLoadedValues already removes orphans on load, but this catches
+    // any value that bypassed sanitize (e.g., stale in-memory state).
+    if (
+      (field.type === 'radio' || field.type === 'select') &&
+      typeof value === 'string' &&
+      value.length > 0
+    ) {
+      const validValues = field.options.map((o) => o.value).filter((v) => v !== '');
+      if (!validValues.includes(value)) {
+        errors[field.id] = `${field.label}: opção não disponível`;
       }
     }
   }
