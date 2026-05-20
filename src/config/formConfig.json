@@ -3,7 +3,7 @@
   "fields": [
     {
       "id": "name",
-      "label": "Nome",
+      "label": "Nomsde",
       "type": "text",
       "required": true
     },
@@ -18,12 +18,6 @@
       "label": "Senha",
       "type": "password",
       "required": true
-    },
-    {
-      "id": "age",
-      "label": "Idade",
-      "type": "number",
-      "required": false
     },
     {
       "id": "bio",

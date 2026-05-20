@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import type { FormConfig, FormField, FormFieldValue, FormValues } from '../types/form';
 import type { FormErrors } from '../utils/validation';
 import { validateForm } from '../utils/validation';
@@ -77,11 +77,17 @@ export function useForm(config: FormConfig): UseFormReturn {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [storageError, setStorageError] = useState<string | null>(null);
 
+  // Raw storage data is kept so we can re-sanitize if config.fields changes
+  // (e.g. a field is removed then added back during development hot-reload).
+  const rawRef = useRef<FormValues | null>(null);
+
   useEffect(() => {
     loadFormData()
       .then((raw) => {
         // {} is truthy — check for actual content before treating as saved data
         if (!raw || Object.keys(raw).length === 0) return;
+
+        rawRef.current = raw;
 
         const clean = sanitizeLoadedValues(config.fields, raw);
         if (Object.keys(clean).length === 0) return;
@@ -104,6 +110,63 @@ export function useForm(config: FormConfig): UseFormReturn {
   // Load from storage exactly once on mount — config is stable at this point
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Re-sync values and savedData when config.fields changes at runtime
+  // (handles hot-reload scenarios where a field is removed then re-added).
+  const fieldKey = useMemo(
+    () => config.fields.map((f) => f.id).join('\x00'),
+    [config.fields],
+  );
+  const prevFieldKeyRef = useRef(fieldKey);
+  useEffect(() => {
+    if (fieldKey === prevFieldKeyRef.current) return;
+    prevFieldKeyRef.current = fieldKey;
+    const raw = rawRef.current;
+    if (!raw) return;
+
+    const clean = sanitizeLoadedValues(config.fields, raw);
+    const fieldIds = new Set(config.fields.map((f) => f.id));
+
+    setValues((prev) => {
+      const next = { ...prev };
+      let changed = false;
+      // Restore values for fields that came back into the config
+      for (const field of config.fields) {
+        if (clean[field.id] !== undefined && prev[field.id] === undefined) {
+          next[field.id] = clean[field.id];
+          changed = true;
+        }
+      }
+      // Drop values for fields no longer in config
+      for (const key of Object.keys(next)) {
+        if (!fieldIds.has(key)) {
+          delete next[key];
+          changed = true;
+        }
+      }
+      return changed ? next : prev;
+    });
+
+    setSavedData((prev) => {
+      if (!prev) return prev;
+      const next = { ...prev };
+      let changed = false;
+      for (const field of config.fields) {
+        if (clean[field.id] !== undefined && prev[field.id] === undefined) {
+          next[field.id] = clean[field.id];
+          changed = true;
+        }
+      }
+      for (const key of Object.keys(next)) {
+        if (!fieldIds.has(key)) {
+          delete next[key];
+          changed = true;
+        }
+      }
+      return changed ? next : prev;
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fieldKey]);
 
   const isValid = useMemo(
     () => Object.keys(validateForm(config.fields, values)).length === 0,
