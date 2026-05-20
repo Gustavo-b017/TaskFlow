@@ -181,6 +181,7 @@ O app sobrevive a qualquer alteração no `formConfig.ts` com dados já salvos:
 | Alteração no JSON | Comportamento |
 |---|---|
 | Campo removido | Chave obsoleta é descartada — não reaparece |
+| Campo re-adicionado | Dado original é restaurado do storage bruto via `rawRef` — sem perda de dados |
 | Campo adicionado (obrigatório) | Formulário pré-populado, usuário preenche o novo campo |
 | Tipo do campo alterado | Valor incompatível descartado, campo volta ao estado inicial |
 | Opção removida de radio/select | Valor orfão descartado, campo aparece vazio para nova seleção |
@@ -193,9 +194,10 @@ O app sobrevive a qualquer alteração no `formConfig.ts` com dados já salvos:
 | Hook | Localização | Finalidade |
 |---|---|---|
 | `useState` | `useForm`, `useFormConfig`, `SelectFieldInput` | Controla `values`, `errors`, `submitted`, `savedData`, `isSubmitting`, `storageError`, estado do modal |
-| `useEffect` | `useForm`, `useFormConfig` | Carrega dados do AsyncStorage ao montar; carrega config local ou remota |
-| `useMemo` | `useForm`, `SelectFieldInput`, `RadioFieldInput`, `FormResult` | Derivações sem re-render desnecessário (`isValid`, `validOptions`, `selectedLabel`, `rows`) |
+| `useEffect` | `useForm`, `useFormConfig` | Carrega dados do AsyncStorage ao montar; re-sincroniza ao mudar config; carrega config local ou remota |
+| `useMemo` | `useForm`, `SelectFieldInput`, `RadioFieldInput`, `FormResult` | Derivações sem re-render desnecessário (`isValid`, `fieldKey`, `validOptions`, `selectedLabel`, `rows`) |
 | `useCallback` | `useForm` | Funções estáveis: `setValue`, `handleSubmit`, `handleClear`, `handleEdit` |
+| `useRef` | `useForm` | Guarda dado bruto do AsyncStorage (`rawRef`) e chave anterior de campos (`prevFieldKeyRef`) para re-sincronização sem re-mount |
 
 ---
 
@@ -239,4 +241,68 @@ TaskFlow/
 
 ## Prints da aplicação
 
-> ⚠️ Adicionar prints antes da entrega (20/05/2026).
+### Formulário inicial
+
+Formulário gerado automaticamente a partir do `formConfig.json`, com todos os tipos de campo renderizados.
+
+![Formulário inicial](src/prints/inicial.png)
+
+---
+
+### Dinamismo do JSON — label e obrigatoriedade
+
+Alterar o `label` de um campo no JSON reflete instantaneamente no formulário sem tocar em nenhum componente.
+
+![Mudando label do campo Nome](src/prints/mudando%20campo%20nome.png)
+
+Adicionando a obrigatoriedade (`required: true`) — asterisco vermelho aparece no campo.
+
+![Colocando obrigatoriedade](src/prints/colocando_obrigatoriedade.png)
+
+Removendo a obrigatoriedade (`required: false`) — asterisco some e o campo deixa de bloquear o envio.
+
+![Tirando obrigatoriedade](src/prints/tirando_obrigatoriedade.png)
+
+---
+
+### Adição e remoção de campo em tempo real
+
+Campo removido do JSON: o campo some do formulário imediatamente.
+
+![Formulário sem o campo](src/prints/sem_campo.png)
+
+Campo re-adicionado ao JSON: o campo volta ao formulário com o dado anterior preservado.
+
+![Formulário com o campo](src/prints/com_campo.png)
+
+---
+
+### Validação de data
+
+Data inválida (`34/23/4324`) — mensagem de erro exibida abaixo do campo, botão bloqueado.
+
+![Data inválida](src/prints/data_invalida.png)
+
+---
+
+### Tela de dados salvos
+
+Após o envio bem-sucedido, todos os campos e valores são exibidos na tela de resultado.
+
+![Dados salvos](src/prints/dados_salvos.png)
+
+Data válida salva (`11/11/2011`) — exibida corretamente na tela de resultado.
+
+![Dados salvos com data certa](src/prints/data_certa.png)
+
+---
+
+### Resiliência a mudanças de config com dados já salvos
+
+Campo removido do JSON: a tela de dados salvos omite o campo removido, mas o AsyncStorage preserva o dado.
+
+![Dados salvos sem campo](src/prints/dados_salvos_sem_campo.png)
+
+Campo re-adicionado ao JSON: o dado é restaurado do storage bruto e exibido novamente — sem perda.
+
+![Dados salvos com campo restaurado](src/prints/dados_salvos_com_campo.png)
